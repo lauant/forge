@@ -1,0 +1,10 @@
+{
+    "require": {
+        "mailchimp/marketing": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "SBA\\MCD\\": "includes/"
+        }
+    }
+}
