@@ -8,44 +8,42 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console;
 
-namespace Symfony\Component\Console;
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\HelpCommand;
-use Symfony\Component\Console\Command\ListCommand;
-use Symfony\Component\Console\Descriptor\TextDescriptor;
-use Symfony\Component\Console\Descriptor\XmlDescriptor;
-use Symfony\Component\Console\Event\ConsoleCommandEvent;
-use Symfony\Component\Console\Event\ConsoleExceptionEvent;
-use Symfony\Component\Console\Event\ConsoleTerminateEvent;
-use Symfony\Component\Console\Exception\CommandNotFoundException;
-use Symfony\Component\Console\Exception\ExceptionInterface;
-use Symfony\Component\Console\Exception\LogicException;
-use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Helper\DebugFormatterHelper;
-use Symfony\Component\Console\Helper\DialogHelper;
-use Symfony\Component\Console\Helper\FormatterHelper;
-use Symfony\Component\Console\Helper\Helper;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Helper\ProcessHelper;
-use Symfony\Component\Console\Helper\ProgressHelper;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Helper\TableHelper;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputAwareInterface;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
+use Lauant\Forge\Symfony\Component\Console\Command\Command;
+use Lauant\Forge\Symfony\Component\Console\Command\HelpCommand;
+use Lauant\Forge\Symfony\Component\Console\Command\ListCommand;
+use Lauant\Forge\Symfony\Component\Console\Descriptor\TextDescriptor;
+use Lauant\Forge\Symfony\Component\Console\Descriptor\XmlDescriptor;
+use Lauant\Forge\Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Lauant\Forge\Symfony\Component\Console\Event\ConsoleExceptionEvent;
+use Lauant\Forge\Symfony\Component\Console\Event\ConsoleTerminateEvent;
+use Lauant\Forge\Symfony\Component\Console\Exception\CommandNotFoundException;
+use Lauant\Forge\Symfony\Component\Console\Exception\ExceptionInterface;
+use Lauant\Forge\Symfony\Component\Console\Exception\LogicException;
+use Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter;
+use Lauant\Forge\Symfony\Component\Console\Helper\DebugFormatterHelper;
+use Lauant\Forge\Symfony\Component\Console\Helper\DialogHelper;
+use Lauant\Forge\Symfony\Component\Console\Helper\FormatterHelper;
+use Lauant\Forge\Symfony\Component\Console\Helper\Helper;
+use Lauant\Forge\Symfony\Component\Console\Helper\HelperSet;
+use Lauant\Forge\Symfony\Component\Console\Helper\ProcessHelper;
+use Lauant\Forge\Symfony\Component\Console\Helper\ProgressHelper;
+use Lauant\Forge\Symfony\Component\Console\Helper\QuestionHelper;
+use Lauant\Forge\Symfony\Component\Console\Helper\TableHelper;
+use Lauant\Forge\Symfony\Component\Console\Input\ArgvInput;
+use Lauant\Forge\Symfony\Component\Console\Input\ArrayInput;
+use Lauant\Forge\Symfony\Component\Console\Input\InputArgument;
+use Lauant\Forge\Symfony\Component\Console\Input\InputAwareInterface;
+use Lauant\Forge\Symfony\Component\Console\Input\InputDefinition;
+use Lauant\Forge\Symfony\Component\Console\Input\InputInterface;
+use Lauant\Forge\Symfony\Component\Console\Input\InputOption;
+use Lauant\Forge\Symfony\Component\Console\Output\BufferedOutput;
+use Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutput;
+use Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Lauant\Forge\Symfony\Component\Console\Output\OutputInterface;
+use Lauant\Forge\Symfony\Component\Debug\Exception\FatalThrowableError;
+use Lauant\Forge\Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * An Application is the container for a collection of commands.
  *
@@ -64,19 +62,18 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class Application
 {
     private $commands = array();
-    private $wantHelps = false;
+    private $wantHelps = \false;
     private $runningCommand;
     private $name;
     private $version;
-    private $catchExceptions = true;
-    private $autoExit = true;
+    private $catchExceptions = \true;
+    private $autoExit = \true;
     private $definition;
     private $helperSet;
     private $dispatcher;
     private $terminalDimensions;
     private $defaultCommand;
     private $initialized;
-
     /**
      * @param string $name    The name of the application
      * @param string $version The version of the application
@@ -87,12 +84,10 @@ class Application
         $this->version = $version;
         $this->defaultCommand = 'list';
     }
-
-    public function setDispatcher(EventDispatcherInterface $dispatcher)
+    public function setDispatcher(\Lauant\Forge\Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher)
     {
         $this->dispatcher = $dispatcher;
     }
-
     /**
      * Runs the current application.
      *
@@ -100,99 +95,76 @@ class Application
      *
      * @throws \Exception When running fails. Bypass this when {@link setCatchExceptions()}.
      */
-    public function run(InputInterface $input = null, OutputInterface $output = null)
+    public function run(\Lauant\Forge\Symfony\Component\Console\Input\InputInterface $input = null, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output = null)
     {
         if (null === $input) {
-            $input = new ArgvInput();
+            $input = new \Lauant\Forge\Symfony\Component\Console\Input\ArgvInput();
         }
-
         if (null === $output) {
-            $output = new ConsoleOutput();
+            $output = new \Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutput();
         }
-
         $this->configureIO($input, $output);
-
         try {
             $e = null;
             $exitCode = $this->doRun($input, $output);
         } catch (\Exception $e) {
         }
-
         if (null !== $e) {
             if (!$this->catchExceptions) {
                 throw $e;
             }
-
-            if ($output instanceof ConsoleOutputInterface) {
+            if ($output instanceof \Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutputInterface) {
                 $this->renderException($e, $output->getErrorOutput());
             } else {
                 $this->renderException($e, $output);
             }
-
             $exitCode = $this->getExitCodeForThrowable($e);
         }
-
         if ($this->autoExit) {
             if ($exitCode > 255) {
                 $exitCode = 255;
             }
-
             exit($exitCode);
         }
-
         return $exitCode;
     }
-
     /**
      * Runs the current application.
      *
      * @return int 0 if everything went fine, or an error code
      */
-    public function doRun(InputInterface $input, OutputInterface $output)
+    public function doRun(\Lauant\Forge\Symfony\Component\Console\Input\InputInterface $input, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output)
     {
-        if (true === $input->hasParameterOption(array('--version', '-V'))) {
+        if (\true === $input->hasParameterOption(array('--version', '-V'))) {
             $output->writeln($this->getLongVersion());
-
             return 0;
         }
-
         $name = $this->getCommandName($input);
-        if (true === $input->hasParameterOption(array('--help', '-h'))) {
+        if (\true === $input->hasParameterOption(array('--help', '-h'))) {
             if (!$name) {
                 $name = 'help';
-                $input = new ArrayInput(array('command' => 'help'));
+                $input = new \Lauant\Forge\Symfony\Component\Console\Input\ArrayInput(array('command' => 'help'));
             } else {
-                $this->wantHelps = true;
+                $this->wantHelps = \true;
             }
         }
-
         if (!$name) {
             $name = $this->defaultCommand;
             $definition = $this->getDefinition();
-            $definition->setArguments(array_merge(
-                $definition->getArguments(),
-                array(
-                    'command' => new InputArgument('command', InputArgument::OPTIONAL, $definition->getArgument('command')->getDescription(), $name),
-                )
-            ));
+            $definition->setArguments(\array_merge($definition->getArguments(), array('command' => new \Lauant\Forge\Symfony\Component\Console\Input\InputArgument('command', \Lauant\Forge\Symfony\Component\Console\Input\InputArgument::OPTIONAL, $definition->getArgument('command')->getDescription(), $name))));
         }
-
         $this->runningCommand = null;
         // the command name MUST be the first element of the input
         $command = $this->find($name);
-
         $this->runningCommand = $command;
         $exitCode = $this->doRunCommand($command, $input, $output);
         $this->runningCommand = null;
-
         return $exitCode;
     }
-
-    public function setHelperSet(HelperSet $helperSet)
+    public function setHelperSet(\Lauant\Forge\Symfony\Component\Console\Helper\HelperSet $helperSet)
     {
         $this->helperSet = $helperSet;
     }
-
     /**
      * Get the helper set associated with the command.
      *
@@ -203,15 +175,12 @@ class Application
         if (!$this->helperSet) {
             $this->helperSet = $this->getDefaultHelperSet();
         }
-
         return $this->helperSet;
     }
-
-    public function setDefinition(InputDefinition $definition)
+    public function setDefinition(\Lauant\Forge\Symfony\Component\Console\Input\InputDefinition $definition)
     {
         $this->definition = $definition;
     }
-
     /**
      * Gets the InputDefinition related to this Application.
      *
@@ -222,10 +191,8 @@ class Application
         if (!$this->definition) {
             $this->definition = $this->getDefaultInputDefinition();
         }
-
         return $this->definition;
     }
-
     /**
      * Gets the help message.
      *
@@ -235,7 +202,6 @@ class Application
     {
         return $this->getLongVersion();
     }
-
     /**
      * Sets whether to catch exceptions or not during commands execution.
      *
@@ -245,7 +211,6 @@ class Application
     {
         $this->catchExceptions = (bool) $boolean;
     }
-
     /**
      * Sets whether to automatically exit after a command execution or not.
      *
@@ -255,7 +220,6 @@ class Application
     {
         $this->autoExit = (bool) $boolean;
     }
-
     /**
      * Gets the name of the application.
      *
@@ -265,7 +229,6 @@ class Application
     {
         return $this->name;
     }
-
     /**
      * Sets the application name.
      *
@@ -275,7 +238,6 @@ class Application
     {
         $this->name = $name;
     }
-
     /**
      * Gets the application version.
      *
@@ -285,7 +247,6 @@ class Application
     {
         return $this->version;
     }
-
     /**
      * Sets the application version.
      *
@@ -295,7 +256,6 @@ class Application
     {
         $this->version = $version;
     }
-
     /**
      * Returns the long version of the application.
      *
@@ -305,15 +265,12 @@ class Application
     {
         if ('UNKNOWN' !== $this->getName()) {
             if ('UNKNOWN' !== $this->getVersion()) {
-                return sprintf('<info>%s</info> version <comment>%s</comment>', $this->getName(), $this->getVersion());
+                return \sprintf('<info>%s</info> version <comment>%s</comment>', $this->getName(), $this->getVersion());
             }
-
-            return sprintf('<info>%s</info>', $this->getName());
+            return \sprintf('<info>%s</info>', $this->getName());
         }
-
         return '<info>Console Tool</info>';
     }
-
     /**
      * Registers a new command.
      *
@@ -323,9 +280,8 @@ class Application
      */
     public function register($name)
     {
-        return $this->add(new Command($name));
+        return $this->add(new \Lauant\Forge\Symfony\Component\Console\Command\Command($name));
     }
-
     /**
      * Adds an array of command objects.
      *
@@ -339,7 +295,6 @@ class Application
             $this->add($command);
         }
     }
-
     /**
      * Adds a command object.
      *
@@ -348,31 +303,23 @@ class Application
      *
      * @return Command|null The registered command if enabled or null
      */
-    public function add(Command $command)
+    public function add(\Lauant\Forge\Symfony\Component\Console\Command\Command $command)
     {
         $this->init();
-
         $command->setApplication($this);
-
         if (!$command->isEnabled()) {
             $command->setApplication(null);
-
             return;
         }
-
         if (null === $command->getDefinition()) {
-            throw new LogicException(sprintf('Command class "%s" is not correctly initialized. You probably forgot to call the parent constructor.', \get_class($command)));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\LogicException(\sprintf('Command class "%s" is not correctly initialized. You probably forgot to call the parent constructor.', \get_class($command)));
         }
-
         $this->commands[$command->getName()] = $command;
-
         foreach ($command->getAliases() as $alias) {
             $this->commands[$alias] = $command;
         }
-
         return $command;
     }
-
     /**
      * Returns a registered command by name or alias.
      *
@@ -385,25 +332,18 @@ class Application
     public function get($name)
     {
         $this->init();
-
         if (!isset($this->commands[$name])) {
-            throw new CommandNotFoundException(sprintf('The command "%s" does not exist.', $name));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\CommandNotFoundException(\sprintf('The command "%s" does not exist.', $name));
         }
-
         $command = $this->commands[$name];
-
         if ($this->wantHelps) {
-            $this->wantHelps = false;
-
+            $this->wantHelps = \false;
             $helpCommand = $this->get('help');
             $helpCommand->setCommand($command);
-
             return $helpCommand;
         }
-
         return $command;
     }
-
     /**
      * Returns true if the command exists, false otherwise.
      *
@@ -414,10 +354,8 @@ class Application
     public function has($name)
     {
         $this->init();
-
         return isset($this->commands[$name]);
     }
-
     /**
      * Returns an array of all unique namespaces used by currently registered commands.
      *
@@ -429,16 +367,13 @@ class Application
     {
         $namespaces = array();
         foreach ($this->all() as $command) {
-            $namespaces = array_merge($namespaces, $this->extractAllNamespaces($command->getName()));
-
+            $namespaces = \array_merge($namespaces, $this->extractAllNamespaces($command->getName()));
             foreach ($command->getAliases() as $alias) {
-                $namespaces = array_merge($namespaces, $this->extractAllNamespaces($alias));
+                $namespaces = \array_merge($namespaces, $this->extractAllNamespaces($alias));
             }
         }
-
-        return array_values(array_unique(array_filter($namespaces)));
+        return \array_values(\array_unique(\array_filter($namespaces)));
     }
-
     /**
      * Finds a registered namespace by a name or an abbreviation.
      *
@@ -451,33 +386,28 @@ class Application
     public function findNamespace($namespace)
     {
         $allNamespaces = $this->getNamespaces();
-        $expr = preg_replace_callback('{([^:]+|)}', function ($matches) { return preg_quote($matches[1]).'[^:]*'; }, $namespace);
-        $namespaces = preg_grep('{^'.$expr.'}', $allNamespaces);
-
+        $expr = \preg_replace_callback('{([^:]+|)}', function ($matches) {
+            return \preg_quote($matches[1]) . '[^:]*';
+        }, $namespace);
+        $namespaces = \preg_grep('{^' . $expr . '}', $allNamespaces);
         if (empty($namespaces)) {
-            $message = sprintf('There are no commands defined in the "%s" namespace.', $namespace);
-
+            $message = \sprintf('There are no commands defined in the "%s" namespace.', $namespace);
             if ($alternatives = $this->findAlternatives($namespace, $allNamespaces)) {
                 if (1 == \count($alternatives)) {
                     $message .= "\n\nDid you mean this?\n    ";
                 } else {
                     $message .= "\n\nDid you mean one of these?\n    ";
                 }
-
-                $message .= implode("\n    ", $alternatives);
+                $message .= \implode("\n    ", $alternatives);
             }
-
-            throw new CommandNotFoundException($message, $alternatives);
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\CommandNotFoundException($message, $alternatives);
         }
-
-        $exact = \in_array($namespace, $namespaces, true);
+        $exact = \in_array($namespace, $namespaces, \true);
         if (\count($namespaces) > 1 && !$exact) {
-            throw new CommandNotFoundException(sprintf('The namespace "%s" is ambiguous (%s).', $namespace, $this->getAbbreviationSuggestions(array_values($namespaces))), array_values($namespaces));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\CommandNotFoundException(\sprintf('The namespace "%s" is ambiguous (%s).', $namespace, $this->getAbbreviationSuggestions(\array_values($namespaces))), \array_values($namespaces));
         }
-
-        return $exact ? $namespace : reset($namespaces);
+        return $exact ? $namespace : \reset($namespaces);
     }
-
     /**
      * Finds a command by name or alias.
      *
@@ -494,51 +424,43 @@ class Application
     {
         $this->init();
         $aliases = array();
-        $allCommands = array_keys($this->commands);
-        $expr = preg_replace_callback('{([^:]+|)}', function ($matches) { return preg_quote($matches[1]).'[^:]*'; }, $name);
-        $commands = preg_grep('{^'.$expr.'}', $allCommands);
-
-        if (empty($commands) || \count(preg_grep('{^'.$expr.'$}', $commands)) < 1) {
-            if (false !== $pos = strrpos($name, ':')) {
+        $allCommands = \array_keys($this->commands);
+        $expr = \preg_replace_callback('{([^:]+|)}', function ($matches) {
+            return \preg_quote($matches[1]) . '[^:]*';
+        }, $name);
+        $commands = \preg_grep('{^' . $expr . '}', $allCommands);
+        if (empty($commands) || \count(\preg_grep('{^' . $expr . '$}', $commands)) < 1) {
+            if (\false !== ($pos = \strrpos($name, ':'))) {
                 // check if a namespace exists and contains commands
-                $this->findNamespace(substr($name, 0, $pos));
+                $this->findNamespace(\substr($name, 0, $pos));
             }
-
-            $message = sprintf('Command "%s" is not defined.', $name);
-
+            $message = \sprintf('Command "%s" is not defined.', $name);
             if ($alternatives = $this->findAlternatives($name, $allCommands)) {
                 if (1 == \count($alternatives)) {
                     $message .= "\n\nDid you mean this?\n    ";
                 } else {
                     $message .= "\n\nDid you mean one of these?\n    ";
                 }
-                $message .= implode("\n    ", $alternatives);
+                $message .= \implode("\n    ", $alternatives);
             }
-
-            throw new CommandNotFoundException($message, $alternatives);
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\CommandNotFoundException($message, $alternatives);
         }
-
         // filter out aliases for commands which are already on the list
         if (\count($commands) > 1) {
             $commandList = $this->commands;
-            $commands = array_filter($commands, function ($nameOrAlias) use ($commandList, $commands, &$aliases) {
+            $commands = \array_filter($commands, function ($nameOrAlias) use($commandList, $commands, &$aliases) {
                 $commandName = $commandList[$nameOrAlias]->getName();
                 $aliases[$nameOrAlias] = $commandName;
-
                 return $commandName === $nameOrAlias || !\in_array($commandName, $commands);
             });
         }
-
-        $exact = \in_array($name, $commands, true) || isset($aliases[$name]);
+        $exact = \in_array($name, $commands, \true) || isset($aliases[$name]);
         if (!$exact && \count($commands) > 1) {
-            $suggestions = $this->getAbbreviationSuggestions(array_values($commands));
-
-            throw new CommandNotFoundException(sprintf('Command "%s" is ambiguous (%s).', $name, $suggestions), array_values($commands));
+            $suggestions = $this->getAbbreviationSuggestions(\array_values($commands));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\CommandNotFoundException(\sprintf('Command "%s" is ambiguous (%s).', $name, $suggestions), \array_values($commands));
         }
-
-        return $this->get($exact ? $name : reset($commands));
+        return $this->get($exact ? $name : \reset($commands));
     }
-
     /**
      * Gets the commands (registered in the given namespace if provided).
      *
@@ -551,21 +473,17 @@ class Application
     public function all($namespace = null)
     {
         $this->init();
-
         if (null === $namespace) {
             return $this->commands;
         }
-
         $commands = array();
         foreach ($this->commands as $name => $command) {
-            if ($namespace === $this->extractNamespace($name, substr_count($namespace, ':') + 1)) {
+            if ($namespace === $this->extractNamespace($name, \substr_count($namespace, ':') + 1)) {
                 $commands[$name] = $command;
             }
         }
-
         return $commands;
     }
-
     /**
      * Returns an array of possible abbreviations given a set of names.
      *
@@ -578,14 +496,12 @@ class Application
         $abbrevs = array();
         foreach ($names as $name) {
             for ($len = \strlen($name); $len > 0; --$len) {
-                $abbrev = substr($name, 0, $len);
+                $abbrev = \substr($name, 0, $len);
                 $abbrevs[$abbrev][] = $name;
             }
         }
-
         return $abbrevs;
     }
-
     /**
      * Returns a text representation of the Application.
      *
@@ -596,17 +512,14 @@ class Application
      *
      * @deprecated since version 2.3, to be removed in 3.0.
      */
-    public function asText($namespace = null, $raw = false)
+    public function asText($namespace = null, $raw = \false)
     {
-        @trigger_error('The '.__METHOD__.' method is deprecated since Symfony 2.3 and will be removed in 3.0.', E_USER_DEPRECATED);
-
-        $descriptor = new TextDescriptor();
-        $output = new BufferedOutput(BufferedOutput::VERBOSITY_NORMAL, !$raw);
-        $descriptor->describe($output, $this, array('namespace' => $namespace, 'raw_output' => true));
-
+        @\trigger_error('The ' . __METHOD__ . ' method is deprecated since Symfony 2.3 and will be removed in 3.0.', \E_USER_DEPRECATED);
+        $descriptor = new \Lauant\Forge\Symfony\Component\Console\Descriptor\TextDescriptor();
+        $output = new \Lauant\Forge\Symfony\Component\Console\Output\BufferedOutput(\Lauant\Forge\Symfony\Component\Console\Output\BufferedOutput::VERBOSITY_NORMAL, !$raw);
+        $descriptor->describe($output, $this, array('namespace' => $namespace, 'raw_output' => \true));
         return $output->fetch();
     }
-
     /**
      * Returns an XML representation of the Application.
      *
@@ -617,93 +530,70 @@ class Application
      *
      * @deprecated since version 2.3, to be removed in 3.0.
      */
-    public function asXml($namespace = null, $asDom = false)
+    public function asXml($namespace = null, $asDom = \false)
     {
-        @trigger_error('The '.__METHOD__.' method is deprecated since Symfony 2.3 and will be removed in 3.0.', E_USER_DEPRECATED);
-
-        $descriptor = new XmlDescriptor();
-
+        @\trigger_error('The ' . __METHOD__ . ' method is deprecated since Symfony 2.3 and will be removed in 3.0.', \E_USER_DEPRECATED);
+        $descriptor = new \Lauant\Forge\Symfony\Component\Console\Descriptor\XmlDescriptor();
         if ($asDom) {
             return $descriptor->getApplicationDocument($this, $namespace);
         }
-
-        $output = new BufferedOutput();
+        $output = new \Lauant\Forge\Symfony\Component\Console\Output\BufferedOutput();
         $descriptor->describe($output, $this, array('namespace' => $namespace));
-
         return $output->fetch();
     }
-
     /**
      * Renders a caught exception.
      */
     public function renderException($e, $output)
     {
-        $output->writeln('', OutputInterface::VERBOSITY_QUIET);
-
+        $output->writeln('', \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
         do {
-            $title = sprintf('  [%s]  ', \get_class($e));
-
-            $len = Helper::strlen($title);
-
-            $width = $this->getTerminalWidth() ? $this->getTerminalWidth() - 1 : PHP_INT_MAX;
+            $title = \sprintf('  [%s]  ', \get_class($e));
+            $len = \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($title);
+            $width = $this->getTerminalWidth() ? $this->getTerminalWidth() - 1 : \PHP_INT_MAX;
             // HHVM only accepts 32 bits integer in str_split, even when PHP_INT_MAX is a 64 bit integer: https://github.com/facebook/hhvm/issues/1327
             if (\defined('HHVM_VERSION') && $width > 1 << 31) {
                 $width = 1 << 31;
             }
             $lines = array();
-            foreach (preg_split('/\r?\n/', trim($e->getMessage())) as $line) {
+            foreach (\preg_split('/\\r?\\n/', \trim($e->getMessage())) as $line) {
                 foreach ($this->splitStringByWidth($line, $width - 4) as $line) {
                     // pre-format lines to get the right string length
-                    $lineLength = Helper::strlen($line) + 4;
+                    $lineLength = \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($line) + 4;
                     $lines[] = array($line, $lineLength);
-
-                    $len = max($lineLength, $len);
+                    $len = \max($lineLength, $len);
                 }
             }
-
             $messages = array();
-            $messages[] = $emptyLine = sprintf('<error>%s</error>', str_repeat(' ', $len));
-            $messages[] = sprintf('<error>%s%s</error>', $title, str_repeat(' ', max(0, $len - Helper::strlen($title))));
+            $messages[] = $emptyLine = \sprintf('<error>%s</error>', \str_repeat(' ', $len));
+            $messages[] = \sprintf('<error>%s%s</error>', $title, \str_repeat(' ', \max(0, $len - \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($title))));
             foreach ($lines as $line) {
-                $messages[] = sprintf('<error>  %s  %s</error>', OutputFormatter::escape($line[0]), str_repeat(' ', $len - $line[1]));
+                $messages[] = \sprintf('<error>  %s  %s</error>', \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter::escape($line[0]), \str_repeat(' ', $len - $line[1]));
             }
             $messages[] = $emptyLine;
             $messages[] = '';
-
-            $output->writeln($messages, OutputInterface::VERBOSITY_QUIET);
-
-            if (OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity()) {
-                $output->writeln('<comment>Exception trace:</comment>', OutputInterface::VERBOSITY_QUIET);
-
+            $output->writeln($messages, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
+            if (\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity()) {
+                $output->writeln('<comment>Exception trace:</comment>', \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
                 // exception related properties
                 $trace = $e->getTrace();
-                array_unshift($trace, array(
-                    'function' => '',
-                    'file' => null !== $e->getFile() ? $e->getFile() : 'n/a',
-                    'line' => null !== $e->getLine() ? $e->getLine() : 'n/a',
-                    'args' => array(),
-                ));
-
+                \array_unshift($trace, array('function' => '', 'file' => null !== $e->getFile() ? $e->getFile() : 'n/a', 'line' => null !== $e->getLine() ? $e->getLine() : 'n/a', 'args' => array()));
                 for ($i = 0, $count = \count($trace); $i < $count; ++$i) {
                     $class = isset($trace[$i]['class']) ? $trace[$i]['class'] : '';
                     $type = isset($trace[$i]['type']) ? $trace[$i]['type'] : '';
                     $function = $trace[$i]['function'];
                     $file = isset($trace[$i]['file']) ? $trace[$i]['file'] : 'n/a';
                     $line = isset($trace[$i]['line']) ? $trace[$i]['line'] : 'n/a';
-
-                    $output->writeln(sprintf(' %s%s%s() at <info>%s:%s</info>', $class, $type, $function, $file, $line), OutputInterface::VERBOSITY_QUIET);
+                    $output->writeln(\sprintf(' %s%s%s() at <info>%s:%s</info>', $class, $type, $function, $file, $line), \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
                 }
-
-                $output->writeln('', OutputInterface::VERBOSITY_QUIET);
+                $output->writeln('', \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
             }
         } while ($e = $e->getPrevious());
-
         if (null !== $this->runningCommand) {
-            $output->writeln(sprintf('<info>%s</info>', sprintf($this->runningCommand->getSynopsis(), $this->getName())), OutputInterface::VERBOSITY_QUIET);
-            $output->writeln('', OutputInterface::VERBOSITY_QUIET);
+            $output->writeln(\sprintf('<info>%s</info>', \sprintf($this->runningCommand->getSynopsis(), $this->getName())), \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
+            $output->writeln('', \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
         }
     }
-
     /**
      * Tries to figure out the terminal width in which this application runs.
      *
@@ -712,10 +602,8 @@ class Application
     protected function getTerminalWidth()
     {
         $dimensions = $this->getTerminalDimensions();
-
         return $dimensions[0];
     }
-
     /**
      * Tries to figure out the terminal height in which this application runs.
      *
@@ -724,10 +612,8 @@ class Application
     protected function getTerminalHeight()
     {
         $dimensions = $this->getTerminalDimensions();
-
         return $dimensions[1];
     }
-
     /**
      * Tries to figure out the terminal dimensions based on the current environment.
      *
@@ -738,32 +624,28 @@ class Application
         if ($this->terminalDimensions) {
             return $this->terminalDimensions;
         }
-
         if ('\\' === \DIRECTORY_SEPARATOR) {
             // extract [w, H] from "wxh (WxH)"
-            if (preg_match('/^(\d+)x\d+ \(\d+x(\d+)\)$/', trim(getenv('ANSICON')), $matches)) {
+            if (\preg_match('/^(\\d+)x\\d+ \\(\\d+x(\\d+)\\)$/', \trim(\getenv('ANSICON')), $matches)) {
                 return array((int) $matches[1], (int) $matches[2]);
             }
             // extract [w, h] from "wxh"
-            if (preg_match('/^(\d+)x(\d+)$/', $this->getConsoleMode(), $matches)) {
+            if (\preg_match('/^(\\d+)x(\\d+)$/', $this->getConsoleMode(), $matches)) {
                 return array((int) $matches[1], (int) $matches[2]);
             }
         }
-
         if ($sttyString = $this->getSttyColumns()) {
             // extract [w, h] from "rows h; columns w;"
-            if (preg_match('/rows.(\d+);.columns.(\d+);/i', $sttyString, $matches)) {
+            if (\preg_match('/rows.(\\d+);.columns.(\\d+);/i', $sttyString, $matches)) {
                 return array((int) $matches[2], (int) $matches[1]);
             }
             // extract [w, h] from "; h rows; w columns"
-            if (preg_match('/;.(\d+).rows;.(\d+).columns/i', $sttyString, $matches)) {
+            if (\preg_match('/;.(\\d+).rows;.(\\d+).columns/i', $sttyString, $matches)) {
                 return array((int) $matches[2], (int) $matches[1]);
             }
         }
-
         return array(null, null);
     }
-
     /**
      * Sets terminal dimensions.
      *
@@ -777,44 +659,39 @@ class Application
     public function setTerminalDimensions($width, $height)
     {
         $this->terminalDimensions = array($width, $height);
-
         return $this;
     }
-
     /**
      * Configures the input and output instances based on the user arguments and options.
      */
-    protected function configureIO(InputInterface $input, OutputInterface $output)
+    protected function configureIO(\Lauant\Forge\Symfony\Component\Console\Input\InputInterface $input, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output)
     {
-        if (true === $input->hasParameterOption(array('--ansi'))) {
-            $output->setDecorated(true);
-        } elseif (true === $input->hasParameterOption(array('--no-ansi'))) {
-            $output->setDecorated(false);
+        if (\true === $input->hasParameterOption(array('--ansi'))) {
+            $output->setDecorated(\true);
+        } elseif (\true === $input->hasParameterOption(array('--no-ansi'))) {
+            $output->setDecorated(\false);
         }
-
-        if (true === $input->hasParameterOption(array('--no-interaction', '-n'))) {
-            $input->setInteractive(false);
+        if (\true === $input->hasParameterOption(array('--no-interaction', '-n'))) {
+            $input->setInteractive(\false);
         } elseif (\function_exists('posix_isatty') && $this->getHelperSet()->has('question')) {
             $inputStream = $this->getHelperSet()->get('question')->getInputStream();
-            if (!@posix_isatty($inputStream) && false === getenv('SHELL_INTERACTIVE')) {
-                $input->setInteractive(false);
+            if (!@\posix_isatty($inputStream) && \false === \getenv('SHELL_INTERACTIVE')) {
+                $input->setInteractive(\false);
             }
         }
-
-        if (true === $input->hasParameterOption(array('--quiet', '-q'))) {
-            $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
-            $input->setInteractive(false);
+        if (\true === $input->hasParameterOption(array('--quiet', '-q'))) {
+            $output->setVerbosity(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_QUIET);
+            $input->setInteractive(\false);
         } else {
             if ($input->hasParameterOption('-vvv') || $input->hasParameterOption('--verbose=3') || 3 === $input->getParameterOption('--verbose')) {
-                $output->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
+                $output->setVerbosity(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_DEBUG);
             } elseif ($input->hasParameterOption('-vv') || $input->hasParameterOption('--verbose=2') || 2 === $input->getParameterOption('--verbose')) {
-                $output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
+                $output->setVerbosity(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERY_VERBOSE);
             } elseif ($input->hasParameterOption('-v') || $input->hasParameterOption('--verbose=1') || $input->hasParameterOption('--verbose') || $input->getParameterOption('--verbose')) {
-                $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
+                $output->setVerbosity(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE);
             }
         }
     }
-
     /**
      * Runs the current command.
      *
@@ -823,72 +700,60 @@ class Application
      *
      * @return int 0 if everything went fine, or an error code
      */
-    protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output)
+    protected function doRunCommand(\Lauant\Forge\Symfony\Component\Console\Command\Command $command, \Lauant\Forge\Symfony\Component\Console\Input\InputInterface $input, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output)
     {
         foreach ($command->getHelperSet() as $helper) {
-            if ($helper instanceof InputAwareInterface) {
+            if ($helper instanceof \Lauant\Forge\Symfony\Component\Console\Input\InputAwareInterface) {
                 $helper->setInput($input);
             }
         }
-
         if (null === $this->dispatcher) {
             return $command->run($input, $output);
         }
-
         // bind before the console.command event, so the listeners have access to input options/arguments
         try {
             $command->mergeApplicationDefinition();
             $input->bind($command->getDefinition());
-        } catch (ExceptionInterface $e) {
+        } catch (\Lauant\Forge\Symfony\Component\Console\Exception\ExceptionInterface $e) {
             // ignore invalid options/arguments for now, to allow the event listeners to customize the InputDefinition
         }
-
-        $event = new ConsoleCommandEvent($command, $input, $output);
+        $event = new \Lauant\Forge\Symfony\Component\Console\Event\ConsoleCommandEvent($command, $input, $output);
         $e = null;
-
         try {
-            $this->dispatcher->dispatch(ConsoleEvents::COMMAND, $event);
-
+            $this->dispatcher->dispatch(\Lauant\Forge\Symfony\Component\Console\ConsoleEvents::COMMAND, $event);
             if ($event->commandShouldRun()) {
                 $exitCode = $command->run($input, $output);
             } else {
-                $exitCode = ConsoleCommandEvent::RETURN_CODE_DISABLED;
+                $exitCode = \Lauant\Forge\Symfony\Component\Console\Event\ConsoleCommandEvent::RETURN_CODE_DISABLED;
             }
         } catch (\Exception $e) {
         } catch (\Throwable $e) {
         }
         if (null !== $e) {
-            $x = $e instanceof \Exception ? $e : new FatalThrowableError($e);
-            $event = new ConsoleExceptionEvent($command, $input, $output, $x, $x->getCode());
-            $this->dispatcher->dispatch(ConsoleEvents::EXCEPTION, $event);
-
+            $x = $e instanceof \Exception ? $e : new \Lauant\Forge\Symfony\Component\Debug\Exception\FatalThrowableError($e);
+            $event = new \Lauant\Forge\Symfony\Component\Console\Event\ConsoleExceptionEvent($command, $input, $output, $x, $x->getCode());
+            $this->dispatcher->dispatch(\Lauant\Forge\Symfony\Component\Console\ConsoleEvents::EXCEPTION, $event);
             if ($x !== $event->getException()) {
                 $e = $event->getException();
             }
-
             $exitCode = $this->getExitCodeForThrowable($e);
         }
-
-        $event = new ConsoleTerminateEvent($command, $input, $output, $exitCode);
-        $this->dispatcher->dispatch(ConsoleEvents::TERMINATE, $event);
-
+        $event = new \Lauant\Forge\Symfony\Component\Console\Event\ConsoleTerminateEvent($command, $input, $output, $exitCode);
+        $this->dispatcher->dispatch(\Lauant\Forge\Symfony\Component\Console\ConsoleEvents::TERMINATE, $event);
         if (null !== $e) {
             throw $e;
         }
-
         return $event->getExitCode();
     }
-
     /**
      * Gets the name of the command based on input.
      *
      * @return string The command name
      */
-    protected function getCommandName(InputInterface $input)
+    protected function getCommandName(\Lauant\Forge\Symfony\Component\Console\Input\InputInterface $input)
     {
         return $input->getFirstArgument();
     }
-
     /**
      * Gets the default input definition.
      *
@@ -896,19 +761,8 @@ class Application
      */
     protected function getDefaultInputDefinition()
     {
-        return new InputDefinition(array(
-            new InputArgument('command', InputArgument::REQUIRED, 'The command to execute'),
-
-            new InputOption('--help', '-h', InputOption::VALUE_NONE, 'Display this help message'),
-            new InputOption('--quiet', '-q', InputOption::VALUE_NONE, 'Do not output any message'),
-            new InputOption('--verbose', '-v|vv|vvv', InputOption::VALUE_NONE, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'),
-            new InputOption('--version', '-V', InputOption::VALUE_NONE, 'Display this application version'),
-            new InputOption('--ansi', '', InputOption::VALUE_NONE, 'Force ANSI output'),
-            new InputOption('--no-ansi', '', InputOption::VALUE_NONE, 'Disable ANSI output'),
-            new InputOption('--no-interaction', '-n', InputOption::VALUE_NONE, 'Do not ask any interactive question'),
-        ));
+        return new \Lauant\Forge\Symfony\Component\Console\Input\InputDefinition(array(new \Lauant\Forge\Symfony\Component\Console\Input\InputArgument('command', \Lauant\Forge\Symfony\Component\Console\Input\InputArgument::REQUIRED, 'The command to execute'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('--help', '-h', \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Display this help message'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('--quiet', '-q', \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Do not output any message'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('--verbose', '-v|vv|vvv', \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('--version', '-V', \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Display this application version'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('--ansi', '', \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Force ANSI output'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('--no-ansi', '', \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Disable ANSI output'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('--no-interaction', '-n', \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'Do not ask any interactive question')));
     }
-
     /**
      * Gets the default commands that should always be available.
      *
@@ -916,9 +770,8 @@ class Application
      */
     protected function getDefaultCommands()
     {
-        return array(new HelpCommand(), new ListCommand());
+        return array(new \Lauant\Forge\Symfony\Component\Console\Command\HelpCommand(), new \Lauant\Forge\Symfony\Component\Console\Command\ListCommand());
     }
-
     /**
      * Gets the default helper set with the helpers that should always be available.
      *
@@ -926,17 +779,8 @@ class Application
      */
     protected function getDefaultHelperSet()
     {
-        return new HelperSet(array(
-            new FormatterHelper(),
-            new DialogHelper(false),
-            new ProgressHelper(false),
-            new TableHelper(false),
-            new DebugFormatterHelper(),
-            new ProcessHelper(),
-            new QuestionHelper(),
-        ));
+        return new \Lauant\Forge\Symfony\Component\Console\Helper\HelperSet(array(new \Lauant\Forge\Symfony\Component\Console\Helper\FormatterHelper(), new \Lauant\Forge\Symfony\Component\Console\Helper\DialogHelper(\false), new \Lauant\Forge\Symfony\Component\Console\Helper\ProgressHelper(\false), new \Lauant\Forge\Symfony\Component\Console\Helper\TableHelper(\false), new \Lauant\Forge\Symfony\Component\Console\Helper\DebugFormatterHelper(), new \Lauant\Forge\Symfony\Component\Console\Helper\ProcessHelper(), new \Lauant\Forge\Symfony\Component\Console\Helper\QuestionHelper()));
     }
-
     /**
      * Runs and parses stty -a if it's available, suppressing any error output.
      *
@@ -947,19 +791,16 @@ class Application
         if (!\function_exists('proc_open')) {
             return;
         }
-
         $descriptorspec = array(1 => array('pipe', 'w'), 2 => array('pipe', 'w'));
-        $process = proc_open('stty -a | grep columns', $descriptorspec, $pipes, null, null, array('suppress_errors' => true));
+        $process = \proc_open('stty -a | grep columns', $descriptorspec, $pipes, null, null, array('suppress_errors' => \true));
         if (\is_resource($process)) {
-            $info = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            fclose($pipes[2]);
-            proc_close($process);
-
+            $info = \stream_get_contents($pipes[1]);
+            \fclose($pipes[1]);
+            \fclose($pipes[2]);
+            \proc_close($process);
             return $info;
         }
     }
-
     /**
      * Runs and parses mode CON if it's available, suppressing any error output.
      *
@@ -970,21 +811,18 @@ class Application
         if (!\function_exists('proc_open')) {
             return;
         }
-
         $descriptorspec = array(1 => array('pipe', 'w'), 2 => array('pipe', 'w'));
-        $process = proc_open('mode CON', $descriptorspec, $pipes, null, null, array('suppress_errors' => true));
+        $process = \proc_open('mode CON', $descriptorspec, $pipes, null, null, array('suppress_errors' => \true));
         if (\is_resource($process)) {
-            $info = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            fclose($pipes[2]);
-            proc_close($process);
-
-            if (preg_match('/--------+\r?\n.+?(\d+)\r?\n.+?(\d+)\r?\n/', $info, $matches)) {
-                return $matches[2].'x'.$matches[1];
+            $info = \stream_get_contents($pipes[1]);
+            \fclose($pipes[1]);
+            \fclose($pipes[2]);
+            \proc_close($process);
+            if (\preg_match('/--------+\\r?\\n.+?(\\d+)\\r?\\n.+?(\\d+)\\r?\\n/', $info, $matches)) {
+                return $matches[2] . 'x' . $matches[1];
             }
         }
     }
-
     /**
      * Returns abbreviated suggestions in string format.
      *
@@ -994,9 +832,8 @@ class Application
      */
     private function getAbbreviationSuggestions($abbrevs)
     {
-        return sprintf('%s, %s%s', $abbrevs[0], $abbrevs[1], \count($abbrevs) > 2 ? sprintf(' and %d more', \count($abbrevs) - 2) : '');
+        return \sprintf('%s, %s%s', $abbrevs[0], $abbrevs[1], \count($abbrevs) > 2 ? \sprintf(' and %d more', \count($abbrevs) - 2) : '');
     }
-
     /**
      * Returns the namespace part of the command name.
      *
@@ -1009,12 +846,10 @@ class Application
      */
     public function extractNamespace($name, $limit = null)
     {
-        $parts = explode(':', $name);
-        array_pop($parts);
-
-        return implode(':', null === $limit ? $parts : \array_slice($parts, 0, $limit));
+        $parts = \explode(':', $name);
+        \array_pop($parts);
+        return \implode(':', null === $limit ? $parts : \array_slice($parts, 0, $limit));
     }
-
     /**
      * Finds alternative of $name among $collection,
      * if nothing is found in $collection, try in $abbrevs.
@@ -1026,15 +861,13 @@ class Application
      */
     private function findAlternatives($name, $collection)
     {
-        $threshold = 1e3;
+        $threshold = 1000.0;
         $alternatives = array();
-
         $collectionParts = array();
         foreach ($collection as $item) {
-            $collectionParts[$item] = explode(':', $item);
+            $collectionParts[$item] = \explode(':', $item);
         }
-
-        foreach (explode(':', $name) as $i => $subname) {
+        foreach (\explode(':', $name) as $i => $subname) {
             foreach ($collectionParts as $collectionName => $parts) {
                 $exists = isset($alternatives[$collectionName]);
                 if (!isset($parts[$i]) && $exists) {
@@ -1043,29 +876,26 @@ class Application
                 } elseif (!isset($parts[$i])) {
                     continue;
                 }
-
-                $lev = levenshtein($subname, $parts[$i]);
-                if ($lev <= \strlen($subname) / 3 || '' !== $subname && false !== strpos($parts[$i], $subname)) {
+                $lev = \levenshtein($subname, $parts[$i]);
+                if ($lev <= \strlen($subname) / 3 || '' !== $subname && \false !== \strpos($parts[$i], $subname)) {
                     $alternatives[$collectionName] = $exists ? $alternatives[$collectionName] + $lev : $lev;
                 } elseif ($exists) {
                     $alternatives[$collectionName] += $threshold;
                 }
             }
         }
-
         foreach ($collection as $item) {
-            $lev = levenshtein($name, $item);
-            if ($lev <= \strlen($name) / 3 || false !== strpos($item, $name)) {
+            $lev = \levenshtein($name, $item);
+            if ($lev <= \strlen($name) / 3 || \false !== \strpos($item, $name)) {
                 $alternatives[$item] = isset($alternatives[$item]) ? $alternatives[$item] - $lev : $lev;
             }
         }
-
-        $alternatives = array_filter($alternatives, function ($lev) use ($threshold) { return $lev < 2 * $threshold; });
-        asort($alternatives);
-
-        return array_keys($alternatives);
+        $alternatives = \array_filter($alternatives, function ($lev) use($threshold) {
+            return $lev < 2 * $threshold;
+        });
+        \asort($alternatives);
+        return \array_keys($alternatives);
     }
-
     /**
      * Sets the default Command name.
      *
@@ -1075,37 +905,31 @@ class Application
     {
         $this->defaultCommand = $commandName;
     }
-
     private function splitStringByWidth($string, $width)
     {
         // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
         // additionally, array_slice() is not enough as some character has doubled width.
         // we need a function to split string not by character count but by string width
-        if (false === $encoding = mb_detect_encoding($string, null, true)) {
-            return str_split($string, $width);
+        if (\false === ($encoding = \mb_detect_encoding($string, null, \true))) {
+            return \str_split($string, $width);
         }
-
-        $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
+        $utf8String = \mb_convert_encoding($string, 'utf8', $encoding);
         $lines = array();
         $line = '';
-        foreach (preg_split('//u', $utf8String) as $char) {
+        foreach (\preg_split('//u', $utf8String) as $char) {
             // test if $char could be appended to current line
-            if (mb_strwidth($line.$char, 'utf8') <= $width) {
+            if (\mb_strwidth($line . $char, 'utf8') <= $width) {
                 $line .= $char;
                 continue;
             }
             // if not, push current line to array and make new line
-            $lines[] = str_pad($line, $width);
+            $lines[] = \str_pad($line, $width);
             $line = $char;
         }
-
-        $lines[] = \count($lines) ? str_pad($line, $width) : $line;
-
-        mb_convert_variables($encoding, 'utf8', $lines);
-
+        $lines[] = \count($lines) ? \str_pad($line, $width) : $line;
+        \mb_convert_variables($encoding, 'utf8', $lines);
         return $lines;
     }
-
     /**
      * Returns all namespaces of the command name.
      *
@@ -1116,32 +940,27 @@ class Application
     private function extractAllNamespaces($name)
     {
         // -1 as third argument is needed to skip the command short name when exploding
-        $parts = explode(':', $name, -1);
+        $parts = \explode(':', $name, -1);
         $namespaces = array();
-
         foreach ($parts as $part) {
             if (\count($namespaces)) {
-                $namespaces[] = end($namespaces).':'.$part;
+                $namespaces[] = \end($namespaces) . ':' . $part;
             } else {
                 $namespaces[] = $part;
             }
         }
-
         return $namespaces;
     }
-
     private function init()
     {
         if ($this->initialized) {
             return;
         }
-        $this->initialized = true;
-
+        $this->initialized = \true;
         foreach ($this->getDefaultCommands() as $command) {
             $this->add($command);
         }
     }
-
     /**
      * @param \Exception|\Throwable $throwable
      *
@@ -1150,7 +969,7 @@ class Application
     private function getExitCodeForThrowable($throwable)
     {
         $exitCode = $throwable->getCode();
-        if (is_numeric($exitCode)) {
+        if (\is_numeric($exitCode)) {
             $exitCode = (int) $exitCode;
             if (0 === $exitCode) {
                 $exitCode = 1;
@@ -1158,7 +977,6 @@ class Application
         } else {
             $exitCode = 1;
         }
-
         return $exitCode;
     }
 }

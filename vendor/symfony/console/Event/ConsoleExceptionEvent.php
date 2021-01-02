@@ -8,31 +8,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Event;
 
-namespace Symfony\Component\Console\Event;
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
+use Lauant\Forge\Symfony\Component\Console\Command\Command;
+use Lauant\Forge\Symfony\Component\Console\Input\InputInterface;
+use Lauant\Forge\Symfony\Component\Console\Output\OutputInterface;
 /**
  * Allows to handle exception thrown in a command.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class ConsoleExceptionEvent extends ConsoleEvent
+class ConsoleExceptionEvent extends \Lauant\Forge\Symfony\Component\Console\Event\ConsoleEvent
 {
     private $exception;
     private $exitCode;
-
-    public function __construct(Command $command, InputInterface $input, OutputInterface $output, \Exception $exception, $exitCode)
+    public function __construct(\Lauant\Forge\Symfony\Component\Console\Command\Command $command, \Lauant\Forge\Symfony\Component\Console\Input\InputInterface $input, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, \Exception $exception, $exitCode)
     {
         parent::__construct($command, $input, $output);
-
         $this->setException($exception);
         $this->exitCode = (int) $exitCode;
     }
-
     /**
      * Returns the thrown exception.
      *
@@ -42,7 +37,6 @@ class ConsoleExceptionEvent extends ConsoleEvent
     {
         return $this->exception;
     }
-
     /**
      * Replaces the thrown exception.
      *
@@ -54,7 +48,6 @@ class ConsoleExceptionEvent extends ConsoleEvent
     {
         $this->exception = $exception;
     }
-
     /**
      * Gets the exit code.
      *

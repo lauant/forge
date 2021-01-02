@@ -8,13 +8,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Output;
 
-namespace Symfony\Component\Console\Output;
-
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Formatter\OutputFormatterInterface;
-
+use Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException;
+use Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException;
+use Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterInterface;
 /**
  * StreamOutput writes the output to a given stream.
  *
@@ -28,10 +26,9 @@ use Symfony\Component\Console\Formatter\OutputFormatterInterface;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class StreamOutput extends Output
+class StreamOutput extends \Lauant\Forge\Symfony\Component\Console\Output\Output
 {
     private $stream;
-
     /**
      * @param resource                      $stream    A stream resource
      * @param int                           $verbosity The verbosity level (one of the VERBOSITY constants in OutputInterface)
@@ -40,21 +37,17 @@ class StreamOutput extends Output
      *
      * @throws InvalidArgumentException When first argument is not a real stream
      */
-    public function __construct($stream, $verbosity = self::VERBOSITY_NORMAL, $decorated = null, OutputFormatterInterface $formatter = null)
+    public function __construct($stream, $verbosity = self::VERBOSITY_NORMAL, $decorated = null, \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterInterface $formatter = null)
     {
-        if (!\is_resource($stream) || 'stream' !== get_resource_type($stream)) {
-            throw new InvalidArgumentException('The StreamOutput class needs a stream as its first argument.');
+        if (!\is_resource($stream) || 'stream' !== \get_resource_type($stream)) {
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException('The StreamOutput class needs a stream as its first argument.');
         }
-
         $this->stream = $stream;
-
         if (null === $decorated) {
             $decorated = $this->hasColorSupport();
         }
-
         parent::__construct($verbosity, $decorated, $formatter);
     }
-
     /**
      * Gets the stream attached to this StreamOutput instance.
      *
@@ -64,24 +57,20 @@ class StreamOutput extends Output
     {
         return $this->stream;
     }
-
     /**
      * {@inheritdoc}
      */
     protected function doWrite($message, $newline)
     {
         if ($newline) {
-            $message .= PHP_EOL;
+            $message .= \PHP_EOL;
         }
-
-        if (false === @fwrite($this->stream, $message)) {
+        if (\false === @\fwrite($this->stream, $message)) {
             // should never happen
-            throw new RuntimeException('Unable to write output.');
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException('Unable to write output.');
         }
-
-        fflush($this->stream);
+        \fflush($this->stream);
     }
-
     /**
      * Returns true if the stream supports colorization.
      *
@@ -97,28 +86,20 @@ class StreamOutput extends Output
      */
     protected function hasColorSupport()
     {
-        if ('Hyper' === getenv('TERM_PROGRAM')) {
-            return true;
+        if ('Hyper' === \getenv('TERM_PROGRAM')) {
+            return \true;
         }
-
         if (\DIRECTORY_SEPARATOR === '\\') {
-            return (\function_exists('sapi_windows_vt100_support')
-                && @sapi_windows_vt100_support($this->stream))
-                || false !== getenv('ANSICON')
-                || 'ON' === getenv('ConEmuANSI')
-                || 'xterm' === getenv('TERM');
+            return \function_exists('sapi_windows_vt100_support') && @\sapi_windows_vt100_support($this->stream) || \false !== \getenv('ANSICON') || 'ON' === \getenv('ConEmuANSI') || 'xterm' === \getenv('TERM');
         }
-
         if (\function_exists('stream_isatty')) {
-            return @stream_isatty($this->stream);
+            return @\stream_isatty($this->stream);
         }
-
         if (\function_exists('posix_isatty')) {
-            return @posix_isatty($this->stream);
+            return @\posix_isatty($this->stream);
         }
-
-        $stat = @fstat($this->stream);
+        $stat = @\fstat($this->stream);
         // Check if formatted mode is S_IFCHR
-        return $stat ? 0020000 === ($stat['mode'] & 0170000) : false;
+        return $stat ? 020000 === ($stat['mode'] & 0170000) : \false;
     }
 }

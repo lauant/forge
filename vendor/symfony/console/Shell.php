@@ -8,15 +8,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console;
 
-namespace Symfony\Component\Console;
-
-use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Process\PhpExecutableFinder;
-use Symfony\Component\Process\ProcessBuilder;
-
+use Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException;
+use Lauant\Forge\Symfony\Component\Console\Input\StringInput;
+use Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutput;
+use Lauant\Forge\Symfony\Component\Process\PhpExecutableFinder;
+use Lauant\Forge\Symfony\Component\Process\ProcessBuilder;
 /**
  * A Shell wraps an Application to add shell capabilities to it.
  *
@@ -34,39 +32,34 @@ class Shell
     private $history;
     private $output;
     private $hasReadline;
-    private $processIsolation = false;
-
+    private $processIsolation = \false;
     /**
      * If there is no readline support for the current PHP executable
      * a \RuntimeException exception is thrown.
      */
-    public function __construct(Application $application)
+    public function __construct(\Lauant\Forge\Symfony\Component\Console\Application $application)
     {
-        @trigger_error('The '.__CLASS__.' class is deprecated since Symfony 2.8 and will be removed in 3.0.', E_USER_DEPRECATED);
-
+        @\trigger_error('The ' . __CLASS__ . ' class is deprecated since Symfony 2.8 and will be removed in 3.0.', \E_USER_DEPRECATED);
         $this->hasReadline = \function_exists('readline');
         $this->application = $application;
-        $this->history = getenv('HOME').'/.history_'.$application->getName();
-        $this->output = new ConsoleOutput();
+        $this->history = \getenv('HOME') . '/.history_' . $application->getName();
+        $this->output = new \Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutput();
     }
-
     /**
      * Runs the shell.
      */
     public function run()
     {
-        $this->application->setAutoExit(false);
-        $this->application->setCatchExceptions(true);
-
+        $this->application->setAutoExit(\false);
+        $this->application->setCatchExceptions(\true);
         if ($this->hasReadline) {
-            readline_read_history($this->history);
-            readline_completion_function(array($this, 'autocompleter'));
+            \readline_read_history($this->history);
+            \readline_completion_function(array($this, 'autocompleter'));
         }
-
         $this->output->writeln($this->getHeader());
         $php = null;
         if ($this->processIsolation) {
-            $finder = new PhpExecutableFinder();
+            $finder = new \Lauant\Forge\Symfony\Component\Process\PhpExecutableFinder();
             $php = $finder->find();
             $this->output->writeln(<<<'EOF'
 <info>Running with process isolation, you should consider this:</info>
@@ -75,50 +68,34 @@ class Shell
   * commands output is not colorized.
 
 EOF
-            );
+);
         }
-
-        while (true) {
+        while (\true) {
             $command = $this->readline();
-
-            if (false === $command) {
+            if (\false === $command) {
                 $this->output->writeln("\n");
-
                 break;
             }
-
             if ($this->hasReadline) {
-                readline_add_history($command);
-                readline_write_history($this->history);
+                \readline_add_history($command);
+                \readline_write_history($this->history);
             }
-
             if ($this->processIsolation) {
-                $pb = new ProcessBuilder();
-
-                $process = $pb
-                    ->add($php)
-                    ->add($_SERVER['argv'][0])
-                    ->add($command)
-                    ->inheritEnvironmentVariables(true)
-                    ->getProcess()
-                ;
-
+                $pb = new \Lauant\Forge\Symfony\Component\Process\ProcessBuilder();
+                $process = $pb->add($php)->add($_SERVER['argv'][0])->add($command)->inheritEnvironmentVariables(\true)->getProcess();
                 $output = $this->output;
-                $process->run(function ($type, $data) use ($output) {
+                $process->run(function ($type, $data) use($output) {
                     $output->writeln($data);
                 });
-
                 $ret = $process->getExitCode();
             } else {
-                $ret = $this->application->run(new StringInput($command), $this->output);
+                $ret = $this->application->run(new \Lauant\Forge\Symfony\Component\Console\Input\StringInput($command), $this->output);
             }
-
             if (0 !== $ret) {
-                $this->output->writeln(sprintf('<error>The command terminated with an error status (%s)</error>', $ret));
+                $this->output->writeln(\sprintf('<error>The command terminated with an error status (%s)</error>', $ret));
             }
         }
     }
-
     /**
      * Returns the shell header.
      *
@@ -137,7 +114,6 @@ To exit the shell, type <comment>^D</comment>.
 
 EOF;
     }
-
     /**
      * Renders a prompt.
      *
@@ -146,19 +122,16 @@ EOF;
     protected function getPrompt()
     {
         // using the formatter here is required when using readline
-        return $this->output->getFormatter()->format($this->application->getName().' > ');
+        return $this->output->getFormatter()->format($this->application->getName() . ' > ');
     }
-
     protected function getOutput()
     {
         return $this->output;
     }
-
     protected function getApplication()
     {
         return $this->application;
     }
-
     /**
      * Tries to return autocompletion for the current entered text.
      *
@@ -168,33 +141,27 @@ EOF;
      */
     private function autocompleter($text)
     {
-        $info = readline_info();
-        $text = substr($info['line_buffer'], 0, $info['end']);
-
+        $info = \readline_info();
+        $text = \substr($info['line_buffer'], 0, $info['end']);
         if ($info['point'] !== $info['end']) {
-            return true;
+            return \true;
         }
-
         // task name?
-        if (false === strpos($text, ' ') || !$text) {
-            return array_keys($this->application->all());
+        if (\false === \strpos($text, ' ') || !$text) {
+            return \array_keys($this->application->all());
         }
-
         // options and arguments?
         try {
-            $command = $this->application->find(substr($text, 0, strpos($text, ' ')));
+            $command = $this->application->find(\substr($text, 0, \strpos($text, ' ')));
         } catch (\Exception $e) {
-            return true;
+            return \true;
         }
-
         $list = array('--help');
         foreach ($command->getDefinition()->getOptions() as $option) {
-            $list[] = '--'.$option->getName();
+            $list[] = '--' . $option->getName();
         }
-
         return $list;
     }
-
     /**
      * Reads a single line from standard input.
      *
@@ -203,27 +170,23 @@ EOF;
     private function readline()
     {
         if ($this->hasReadline) {
-            $line = readline($this->getPrompt());
+            $line = \readline($this->getPrompt());
         } else {
             $this->output->write($this->getPrompt());
-            $line = fgets(STDIN, 1024);
-            $line = (false === $line || '' === $line) ? false : rtrim($line);
+            $line = \fgets(\STDIN, 1024);
+            $line = \false === $line || '' === $line ? \false : \rtrim($line);
         }
-
         return $line;
     }
-
     public function getProcessIsolation()
     {
         return $this->processIsolation;
     }
-
     public function setProcessIsolation($processIsolation)
     {
         $this->processIsolation = (bool) $processIsolation;
-
-        if ($this->processIsolation && !class_exists('Symfony\\Component\\Process\\Process')) {
-            throw new RuntimeException('Unable to isolate processes as the Symfony Process Component is not installed.');
+        if ($this->processIsolation && !\class_exists('Lauant\\Forge\\Symfony\\Component\\Process\\Process')) {
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException('Unable to isolate processes as the Symfony Process Component is not installed.');
         }
     }
 }

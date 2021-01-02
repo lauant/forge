@@ -8,12 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Input;
 
-namespace Symfony\Component\Console\Input;
-
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Exception\InvalidOptionException;
-
+use Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException;
+use Lauant\Forge\Symfony\Component\Console\Exception\InvalidOptionException;
 /**
  * ArrayInput represents an input provided as an array.
  *
@@ -23,17 +21,14 @@ use Symfony\Component\Console\Exception\InvalidOptionException;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class ArrayInput extends Input
+class ArrayInput extends \Lauant\Forge\Symfony\Component\Console\Input\Input
 {
     private $parameters;
-
-    public function __construct(array $parameters, InputDefinition $definition = null)
+    public function __construct(array $parameters, \Lauant\Forge\Symfony\Component\Console\Input\InputDefinition $definition = null)
     {
         $this->parameters = $parameters;
-
         parent::__construct($definition);
     }
-
     /**
      * {@inheritdoc}
      */
@@ -43,51 +38,42 @@ class ArrayInput extends Input
             if ($key && '-' === $key[0]) {
                 continue;
             }
-
             return $value;
         }
     }
-
     /**
      * {@inheritdoc}
      */
     public function hasParameterOption($values)
     {
         $values = (array) $values;
-
         foreach ($this->parameters as $k => $v) {
             if (!\is_int($k)) {
                 $v = $k;
             }
-
             if (\in_array($v, $values)) {
-                return true;
+                return \true;
             }
         }
-
-        return false;
+        return \false;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getParameterOption($values, $default = false)
+    public function getParameterOption($values, $default = \false)
     {
         $values = (array) $values;
-
         foreach ($this->parameters as $k => $v) {
             if (\is_int($k)) {
                 if (\in_array($v, $values)) {
-                    return true;
+                    return \true;
                 }
             } elseif (\in_array($k, $values)) {
                 return $v;
             }
         }
-
         return $default;
     }
-
     /**
      * Returns a stringified representation of the args passed to the command.
      *
@@ -100,35 +86,32 @@ class ArrayInput extends Input
             if ($param && '-' === $param[0]) {
                 if (\is_array($val)) {
                     foreach ($val as $v) {
-                        $params[] = $param.('' != $v ? '='.$this->escapeToken($v) : '');
+                        $params[] = $param . ('' != $v ? '=' . $this->escapeToken($v) : '');
                     }
                 } else {
-                    $params[] = $param.('' != $val ? '='.$this->escapeToken($val) : '');
+                    $params[] = $param . ('' != $val ? '=' . $this->escapeToken($val) : '');
                 }
             } else {
-                $params[] = \is_array($val) ? implode(' ', array_map(array($this, 'escapeToken'), $val)) : $this->escapeToken($val);
+                $params[] = \is_array($val) ? \implode(' ', \array_map(array($this, 'escapeToken'), $val)) : $this->escapeToken($val);
             }
         }
-
-        return implode(' ', $params);
+        return \implode(' ', $params);
     }
-
     /**
      * {@inheritdoc}
      */
     protected function parse()
     {
         foreach ($this->parameters as $key => $value) {
-            if (0 === strpos($key, '--')) {
-                $this->addLongOption(substr($key, 2), $value);
+            if (0 === \strpos($key, '--')) {
+                $this->addLongOption(\substr($key, 2), $value);
             } elseif ('-' === $key[0]) {
-                $this->addShortOption(substr($key, 1), $value);
+                $this->addShortOption(\substr($key, 1), $value);
             } else {
                 $this->addArgument($key, $value);
             }
         }
     }
-
     /**
      * Adds a short option value.
      *
@@ -140,12 +123,10 @@ class ArrayInput extends Input
     private function addShortOption($shortcut, $value)
     {
         if (!$this->definition->hasShortcut($shortcut)) {
-            throw new InvalidOptionException(sprintf('The "-%s" option does not exist.', $shortcut));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidOptionException(\sprintf('The "-%s" option does not exist.', $shortcut));
         }
-
         $this->addLongOption($this->definition->getOptionForShortcut($shortcut)->getName(), $value);
     }
-
     /**
      * Adds a long option value.
      *
@@ -158,22 +139,17 @@ class ArrayInput extends Input
     private function addLongOption($name, $value)
     {
         if (!$this->definition->hasOption($name)) {
-            throw new InvalidOptionException(sprintf('The "--%s" option does not exist.', $name));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidOptionException(\sprintf('The "--%s" option does not exist.', $name));
         }
-
         $option = $this->definition->getOption($name);
-
         if (null === $value) {
             if ($option->isValueRequired()) {
-                throw new InvalidOptionException(sprintf('The "--%s" option requires a value.', $name));
+                throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidOptionException(\sprintf('The "--%s" option requires a value.', $name));
             }
-
-            $value = $option->isValueOptional() ? $option->getDefault() : true;
+            $value = $option->isValueOptional() ? $option->getDefault() : \true;
         }
-
         $this->options[$name] = $value;
     }
-
     /**
      * Adds an argument value.
      *
@@ -185,9 +161,8 @@ class ArrayInput extends Input
     private function addArgument($name, $value)
     {
         if (!$this->definition->hasArgument($name)) {
-            throw new InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException(\sprintf('The "%s" argument does not exist.', $name));
         }
-
         $this->arguments[$name] = $value;
     }
 }

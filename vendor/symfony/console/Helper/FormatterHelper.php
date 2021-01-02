@@ -8,17 +8,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Helper;
 
-namespace Symfony\Component\Console\Helper;
-
-use Symfony\Component\Console\Formatter\OutputFormatter;
-
+use Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter;
 /**
  * The Formatter class provides helpers to format messages.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class FormatterHelper extends Helper
+class FormatterHelper extends \Lauant\Forge\Symfony\Component\Console\Helper\Helper
 {
     /**
      * Formats a message within a section.
@@ -31,9 +29,8 @@ class FormatterHelper extends Helper
      */
     public function formatSection($section, $message, $style = 'info')
     {
-        return sprintf('<%s>[%s]</%s> %s', $style, $section, $style, $message);
+        return \sprintf('<%s>[%s]</%s> %s', $style, $section, $style, $message);
     }
-
     /**
      * Formats a message as a block of text.
      *
@@ -43,35 +40,30 @@ class FormatterHelper extends Helper
      *
      * @return string The formatter message
      */
-    public function formatBlock($messages, $style, $large = false)
+    public function formatBlock($messages, $style, $large = \false)
     {
         if (!\is_array($messages)) {
             $messages = array($messages);
         }
-
         $len = 0;
         $lines = array();
         foreach ($messages as $message) {
-            $message = OutputFormatter::escape($message);
-            $lines[] = sprintf($large ? '  %s  ' : ' %s ', $message);
-            $len = max($this->strlen($message) + ($large ? 4 : 2), $len);
+            $message = \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter::escape($message);
+            $lines[] = \sprintf($large ? '  %s  ' : ' %s ', $message);
+            $len = \max($this->strlen($message) + ($large ? 4 : 2), $len);
         }
-
-        $messages = $large ? array(str_repeat(' ', $len)) : array();
+        $messages = $large ? array(\str_repeat(' ', $len)) : array();
         for ($i = 0; isset($lines[$i]); ++$i) {
-            $messages[] = $lines[$i].str_repeat(' ', $len - $this->strlen($lines[$i]));
+            $messages[] = $lines[$i] . \str_repeat(' ', $len - $this->strlen($lines[$i]));
         }
         if ($large) {
-            $messages[] = str_repeat(' ', $len);
+            $messages[] = \str_repeat(' ', $len);
         }
-
         for ($i = 0; isset($messages[$i]); ++$i) {
-            $messages[$i] = sprintf('<%s>%s</%s>', $style, $messages[$i], $style);
+            $messages[$i] = \sprintf('<%s>%s</%s>', $style, $messages[$i], $style);
         }
-
-        return implode("\n", $messages);
+        return \implode("\n", $messages);
     }
-
     /**
      * {@inheritdoc}
      */

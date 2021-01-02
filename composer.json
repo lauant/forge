@@ -4,7 +4,7 @@
     },
     "autoload" : {
         "psr-4" : {
-            "Lauant\\CMD\\" : "src"
+            "Lauant\\Forge\\" : "src"
         }
     }
 }

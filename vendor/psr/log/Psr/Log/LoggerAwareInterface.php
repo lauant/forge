@@ -1,6 +1,6 @@
 <?php
 
-namespace Psr\Log;
+namespace Lauant\Forge\Psr\Log;
 
 /**
  * Describes a logger-aware instance.
@@ -14,5 +14,5 @@ interface LoggerAwareInterface
      *
      * @return void
      */
-    public function setLogger(LoggerInterface $logger);
+    public function setLogger(\Lauant\Forge\Psr\Log\LoggerInterface $logger);
 }

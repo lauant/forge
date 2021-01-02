@@ -8,17 +8,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Descriptor;
 
-namespace Symfony\Component\Console\Descriptor;
-
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Helper\Helper;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputOption;
-
+use Lauant\Forge\Symfony\Component\Console\Application;
+use Lauant\Forge\Symfony\Component\Console\Command\Command;
+use Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter;
+use Lauant\Forge\Symfony\Component\Console\Helper\Helper;
+use Lauant\Forge\Symfony\Component\Console\Input\InputArgument;
+use Lauant\Forge\Symfony\Component\Console\Input\InputDefinition;
+use Lauant\Forge\Symfony\Component\Console\Input\InputOption;
 /**
  * Text descriptor.
  *
@@ -26,95 +24,81 @@ use Symfony\Component\Console\Input\InputOption;
  *
  * @internal
  */
-class TextDescriptor extends Descriptor
+class TextDescriptor extends \Lauant\Forge\Symfony\Component\Console\Descriptor\Descriptor
 {
     /**
      * {@inheritdoc}
      */
-    protected function describeInputArgument(InputArgument $argument, array $options = array())
+    protected function describeInputArgument(\Lauant\Forge\Symfony\Component\Console\Input\InputArgument $argument, array $options = array())
     {
         if (null !== $argument->getDefault() && (!\is_array($argument->getDefault()) || \count($argument->getDefault()))) {
-            $default = sprintf('<comment> [default: %s]</comment>', $this->formatDefaultValue($argument->getDefault()));
+            $default = \sprintf('<comment> [default: %s]</comment>', $this->formatDefaultValue($argument->getDefault()));
         } else {
             $default = '';
         }
-
-        $totalWidth = isset($options['total_width']) ? $options['total_width'] : Helper::strlen($argument->getName());
+        $totalWidth = isset($options['total_width']) ? $options['total_width'] : \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($argument->getName());
         $spacingWidth = $totalWidth - \strlen($argument->getName());
-
-        $this->writeText(sprintf('  <info>%s</info>  %s%s%s',
+        $this->writeText(\sprintf(
+            '  <info>%s</info>  %s%s%s',
             $argument->getName(),
-            str_repeat(' ', $spacingWidth),
+            \str_repeat(' ', $spacingWidth),
             // + 4 = 2 spaces before <info>, 2 spaces after </info>
-            preg_replace('/\s*[\r\n]\s*/', "\n".str_repeat(' ', $totalWidth + 4), $argument->getDescription()),
+            \preg_replace('/\\s*[\\r\\n]\\s*/', "\n" . \str_repeat(' ', $totalWidth + 4), $argument->getDescription()),
             $default
         ), $options);
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function describeInputOption(InputOption $option, array $options = array())
+    protected function describeInputOption(\Lauant\Forge\Symfony\Component\Console\Input\InputOption $option, array $options = array())
     {
         if ($option->acceptValue() && null !== $option->getDefault() && (!\is_array($option->getDefault()) || \count($option->getDefault()))) {
-            $default = sprintf('<comment> [default: %s]</comment>', $this->formatDefaultValue($option->getDefault()));
+            $default = \sprintf('<comment> [default: %s]</comment>', $this->formatDefaultValue($option->getDefault()));
         } else {
             $default = '';
         }
-
         $value = '';
         if ($option->acceptValue()) {
-            $value = '='.strtoupper($option->getName());
-
+            $value = '=' . \strtoupper($option->getName());
             if ($option->isValueOptional()) {
-                $value = '['.$value.']';
+                $value = '[' . $value . ']';
             }
         }
-
         $totalWidth = isset($options['total_width']) ? $options['total_width'] : $this->calculateTotalWidthForOptions(array($option));
-        $synopsis = sprintf('%s%s',
-            $option->getShortcut() ? sprintf('-%s, ', $option->getShortcut()) : '    ',
-            sprintf('--%s%s', $option->getName(), $value)
-        );
-
-        $spacingWidth = $totalWidth - Helper::strlen($synopsis);
-
-        $this->writeText(sprintf('  <info>%s</info>  %s%s%s%s',
+        $synopsis = \sprintf('%s%s', $option->getShortcut() ? \sprintf('-%s, ', $option->getShortcut()) : '    ', \sprintf('--%s%s', $option->getName(), $value));
+        $spacingWidth = $totalWidth - \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($synopsis);
+        $this->writeText(\sprintf(
+            '  <info>%s</info>  %s%s%s%s',
             $synopsis,
-            str_repeat(' ', $spacingWidth),
+            \str_repeat(' ', $spacingWidth),
             // + 4 = 2 spaces before <info>, 2 spaces after </info>
-            preg_replace('/\s*[\r\n]\s*/', "\n".str_repeat(' ', $totalWidth + 4), $option->getDescription()),
+            \preg_replace('/\\s*[\\r\\n]\\s*/', "\n" . \str_repeat(' ', $totalWidth + 4), $option->getDescription()),
             $default,
             $option->isArray() ? '<comment> (multiple values allowed)</comment>' : ''
         ), $options);
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function describeInputDefinition(InputDefinition $definition, array $options = array())
+    protected function describeInputDefinition(\Lauant\Forge\Symfony\Component\Console\Input\InputDefinition $definition, array $options = array())
     {
         $totalWidth = $this->calculateTotalWidthForOptions($definition->getOptions());
         foreach ($definition->getArguments() as $argument) {
-            $totalWidth = max($totalWidth, Helper::strlen($argument->getName()));
+            $totalWidth = \max($totalWidth, \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($argument->getName()));
         }
-
         if ($definition->getArguments()) {
             $this->writeText('<comment>Arguments:</comment>', $options);
             $this->writeText("\n");
             foreach ($definition->getArguments() as $argument) {
-                $this->describeInputArgument($argument, array_merge($options, array('total_width' => $totalWidth)));
+                $this->describeInputArgument($argument, \array_merge($options, array('total_width' => $totalWidth)));
                 $this->writeText("\n");
             }
         }
-
         if ($definition->getArguments() && $definition->getOptions()) {
             $this->writeText("\n");
         }
-
         if ($definition->getOptions()) {
             $laterOptions = array();
-
             $this->writeText('<comment>Options:</comment>', $options);
             foreach ($definition->getOptions() as $option) {
                 if (\strlen($option->getShortcut()) > 1) {
@@ -122,112 +106,92 @@ class TextDescriptor extends Descriptor
                     continue;
                 }
                 $this->writeText("\n");
-                $this->describeInputOption($option, array_merge($options, array('total_width' => $totalWidth)));
+                $this->describeInputOption($option, \array_merge($options, array('total_width' => $totalWidth)));
             }
             foreach ($laterOptions as $option) {
                 $this->writeText("\n");
-                $this->describeInputOption($option, array_merge($options, array('total_width' => $totalWidth)));
+                $this->describeInputOption($option, \array_merge($options, array('total_width' => $totalWidth)));
             }
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function describeCommand(Command $command, array $options = array())
+    protected function describeCommand(\Lauant\Forge\Symfony\Component\Console\Command\Command $command, array $options = array())
     {
-        $command->getSynopsis(true);
-        $command->getSynopsis(false);
-        $command->mergeApplicationDefinition(false);
-
+        $command->getSynopsis(\true);
+        $command->getSynopsis(\false);
+        $command->mergeApplicationDefinition(\false);
         $this->writeText('<comment>Usage:</comment>', $options);
-        foreach (array_merge(array($command->getSynopsis(true)), $command->getAliases(), $command->getUsages()) as $usage) {
+        foreach (\array_merge(array($command->getSynopsis(\true)), $command->getAliases(), $command->getUsages()) as $usage) {
             $this->writeText("\n");
-            $this->writeText('  '.OutputFormatter::escape($usage), $options);
+            $this->writeText('  ' . \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter::escape($usage), $options);
         }
         $this->writeText("\n");
-
         $definition = $command->getNativeDefinition();
         if ($definition->getOptions() || $definition->getArguments()) {
             $this->writeText("\n");
             $this->describeInputDefinition($definition, $options);
             $this->writeText("\n");
         }
-
         if ($help = $command->getProcessedHelp()) {
             $this->writeText("\n");
             $this->writeText('<comment>Help:</comment>', $options);
             $this->writeText("\n");
-            $this->writeText('  '.str_replace("\n", "\n  ", $help), $options);
+            $this->writeText('  ' . \str_replace("\n", "\n  ", $help), $options);
             $this->writeText("\n");
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function describeApplication(Application $application, array $options = array())
+    protected function describeApplication(\Lauant\Forge\Symfony\Component\Console\Application $application, array $options = array())
     {
         $describedNamespace = isset($options['namespace']) ? $options['namespace'] : null;
-        $description = new ApplicationDescription($application, $describedNamespace);
-
+        $description = new \Lauant\Forge\Symfony\Component\Console\Descriptor\ApplicationDescription($application, $describedNamespace);
         if (isset($options['raw_text']) && $options['raw_text']) {
             $width = $this->getColumnWidth($description->getCommands());
-
             foreach ($description->getCommands() as $command) {
-                $this->writeText(sprintf("%-{$width}s %s", $command->getName(), $command->getDescription()), $options);
+                $this->writeText(\sprintf("%-{$width}s %s", $command->getName(), $command->getDescription()), $options);
                 $this->writeText("\n");
             }
         } else {
-            if ('' != $help = $application->getHelp()) {
-                $this->writeText("$help\n\n", $options);
+            if ('' != ($help = $application->getHelp())) {
+                $this->writeText("{$help}\n\n", $options);
             }
-
             $this->writeText("<comment>Usage:</comment>\n", $options);
             $this->writeText("  command [options] [arguments]\n\n", $options);
-
-            $this->describeInputDefinition(new InputDefinition($application->getDefinition()->getOptions()), $options);
-
+            $this->describeInputDefinition(new \Lauant\Forge\Symfony\Component\Console\Input\InputDefinition($application->getDefinition()->getOptions()), $options);
             $this->writeText("\n");
             $this->writeText("\n");
-
             $width = $this->getColumnWidth($description->getCommands());
-
             if ($describedNamespace) {
-                $this->writeText(sprintf('<comment>Available commands for the "%s" namespace:</comment>', $describedNamespace), $options);
+                $this->writeText(\sprintf('<comment>Available commands for the "%s" namespace:</comment>', $describedNamespace), $options);
             } else {
                 $this->writeText('<comment>Available commands:</comment>', $options);
             }
-
             // add commands by namespace
             foreach ($description->getNamespaces() as $namespace) {
-                if (!$describedNamespace && ApplicationDescription::GLOBAL_NAMESPACE !== $namespace['id']) {
+                if (!$describedNamespace && \Lauant\Forge\Symfony\Component\Console\Descriptor\ApplicationDescription::GLOBAL_NAMESPACE !== $namespace['id']) {
                     $this->writeText("\n");
-                    $this->writeText(' <comment>'.$namespace['id'].'</comment>', $options);
+                    $this->writeText(' <comment>' . $namespace['id'] . '</comment>', $options);
                 }
-
                 foreach ($namespace['commands'] as $name) {
                     $this->writeText("\n");
-                    $spacingWidth = $width - Helper::strlen($name);
-                    $this->writeText(sprintf('  <info>%s</info>%s%s', $name, str_repeat(' ', $spacingWidth), $description->getCommand($name)->getDescription()), $options);
+                    $spacingWidth = $width - \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($name);
+                    $this->writeText(\sprintf('  <info>%s</info>%s%s', $name, \str_repeat(' ', $spacingWidth), $description->getCommand($name)->getDescription()), $options);
                 }
             }
-
             $this->writeText("\n");
         }
     }
-
     /**
      * {@inheritdoc}
      */
     private function writeText($content, array $options = array())
     {
-        $this->write(
-            isset($options['raw_text']) && $options['raw_text'] ? strip_tags($content) : $content,
-            isset($options['raw_output']) ? !$options['raw_output'] : true
-        );
+        $this->write(isset($options['raw_text']) && $options['raw_text'] ? \strip_tags($content) : $content, isset($options['raw_output']) ? !$options['raw_output'] : \true);
     }
-
     /**
      * Formats input option/argument default value.
      *
@@ -237,27 +201,23 @@ class TextDescriptor extends Descriptor
      */
     private function formatDefaultValue($default)
     {
-        if (INF === $default) {
+        if (\INF === $default) {
             return 'INF';
         }
-
         if (\is_string($default)) {
-            $default = OutputFormatter::escape($default);
+            $default = \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter::escape($default);
         } elseif (\is_array($default)) {
             foreach ($default as $key => $value) {
                 if (\is_string($value)) {
-                    $default[$key] = OutputFormatter::escape($value);
+                    $default[$key] = \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatter::escape($value);
                 }
             }
         }
-
         if (\PHP_VERSION_ID < 50400) {
-            return str_replace(array('\/', '\\\\'), array('/', '\\'), json_encode($default));
+            return \str_replace(array('\\/', '\\\\'), array('/', '\\'), \json_encode($default));
         }
-
-        return str_replace('\\\\', '\\', json_encode($default, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        return \str_replace('\\\\', '\\', \json_encode($default, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE));
     }
-
     /**
      * @param Command[] $commands
      *
@@ -266,17 +226,14 @@ class TextDescriptor extends Descriptor
     private function getColumnWidth(array $commands)
     {
         $widths = array();
-
         foreach ($commands as $command) {
-            $widths[] = Helper::strlen($command->getName());
+            $widths[] = \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($command->getName());
             foreach ($command->getAliases() as $alias) {
-                $widths[] = Helper::strlen($alias);
+                $widths[] = \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($alias);
             }
         }
-
-        return max($widths) + 2;
+        return \max($widths) + 2;
     }
-
     /**
      * @param InputOption[] $options
      *
@@ -287,17 +244,16 @@ class TextDescriptor extends Descriptor
         $totalWidth = 0;
         foreach ($options as $option) {
             // "-" + shortcut + ", --" + name
-            $nameLength = 1 + max(\strlen($option->getShortcut()), 1) + 4 + Helper::strlen($option->getName());
-
+            $nameLength = 1 + \max(\strlen($option->getShortcut()), 1) + 4 + \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($option->getName());
             if ($option->acceptValue()) {
-                $valueLength = 1 + Helper::strlen($option->getName()); // = + value
-                $valueLength += $option->isValueOptional() ? 2 : 0; // [ + ]
-
+                $valueLength = 1 + \Lauant\Forge\Symfony\Component\Console\Helper\Helper::strlen($option->getName());
+                // = + value
+                $valueLength += $option->isValueOptional() ? 2 : 0;
+                // [ + ]
                 $nameLength += $valueLength;
             }
-            $totalWidth = max($totalWidth, $nameLength);
+            $totalWidth = \max($totalWidth, $nameLength);
         }
-
         return $totalWidth;
     }
 }

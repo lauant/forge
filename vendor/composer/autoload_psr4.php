@@ -6,9 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
-    'Symfony\\Component\\Debug\\' => array($vendorDir . '/symfony/debug'),
-    'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
-    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
-    'Lauant\\CMD\\' => array($baseDir . '/src'),
+    'Lauant\\Forge\\Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Lauant\\Forge\\Symfony\\Component\\Debug\\' => array($vendorDir . '/symfony/debug'),
+    'Lauant\\Forge\\Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
+    'Lauant\\Forge\\Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
+    'Lauant\\Forge\\' => array($baseDir . '/src'),
 );

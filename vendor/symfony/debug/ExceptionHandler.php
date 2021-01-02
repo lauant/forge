@@ -8,12 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Debug;
 
-namespace Symfony\Component\Debug;
-
-use Symfony\Component\Debug\Exception\FlattenException;
-use Symfony\Component\Debug\Exception\OutOfMemoryException;
-
+use Lauant\Forge\Symfony\Component\Debug\Exception\FlattenException;
+use Lauant\Forge\Symfony\Component\Debug\Exception\OutOfMemoryException;
 /**
  * ExceptionHandler converts an exception to a Response object.
  *
@@ -34,14 +32,12 @@ class ExceptionHandler
     private $caughtBuffer;
     private $caughtLength;
     private $fileLinkFormat;
-
-    public function __construct($debug = true, $charset = null, $fileLinkFormat = null)
+    public function __construct($debug = \true, $charset = null, $fileLinkFormat = null)
     {
         $this->debug = $debug;
-        $this->charset = $charset ?: ini_get('default_charset') ?: 'UTF-8';
-        $this->fileLinkFormat = $fileLinkFormat ?: ini_get('xdebug.file_link_format') ?: get_cfg_var('xdebug.file_link_format');
+        $this->charset = ($charset ?: \ini_get('default_charset')) ?: 'UTF-8';
+        $this->fileLinkFormat = ($fileLinkFormat ?: \ini_get('xdebug.file_link_format')) ?: \get_cfg_var('xdebug.file_link_format');
     }
-
     /**
      * Registers the exception handler.
      *
@@ -51,19 +47,16 @@ class ExceptionHandler
      *
      * @return ExceptionHandler The registered exception handler
      */
-    public static function register($debug = true, $charset = null, $fileLinkFormat = null)
+    public static function register($debug = \true, $charset = null, $fileLinkFormat = null)
     {
         $handler = new static($debug, $charset, $fileLinkFormat);
-
-        $prev = set_exception_handler(array($handler, 'handle'));
-        if (is_array($prev) && $prev[0] instanceof ErrorHandler) {
-            restore_exception_handler();
+        $prev = \set_exception_handler(array($handler, 'handle'));
+        if (\is_array($prev) && $prev[0] instanceof \Lauant\Forge\Symfony\Component\Debug\ErrorHandler) {
+            \restore_exception_handler();
             $prev[0]->setExceptionHandler(array($handler, 'handle'));
         }
-
         return $handler;
     }
-
     /**
      * Sets a user exception handler.
      *
@@ -75,10 +68,8 @@ class ExceptionHandler
     {
         $old = $this->handler;
         $this->handler = $handler;
-
         return $old;
     }
-
     /**
      * Sets the format for links to source files.
      *
@@ -90,10 +81,8 @@ class ExceptionHandler
     {
         $old = $this->fileLinkFormat;
         $this->fileLinkFormat = $format;
-
         return $old;
     }
-
     /**
      * Sends a response for the given Exception.
      *
@@ -104,44 +93,36 @@ class ExceptionHandler
      */
     public function handle(\Exception $exception)
     {
-        if (null === $this->handler || $exception instanceof OutOfMemoryException) {
+        if (null === $this->handler || $exception instanceof \Lauant\Forge\Symfony\Component\Debug\Exception\OutOfMemoryException) {
             $this->sendPhpResponse($exception);
-
             return;
         }
-
         $caughtLength = $this->caughtLength = 0;
-
-        ob_start(function ($buffer) {
+        \ob_start(function ($buffer) {
             $this->caughtBuffer = $buffer;
-
             return '';
         });
-
         $this->sendPhpResponse($exception);
-        while (null === $this->caughtBuffer && ob_end_flush()) {
+        while (null === $this->caughtBuffer && \ob_end_flush()) {
             // Empty loop, everything is in the condition
         }
         if (isset($this->caughtBuffer[0])) {
-            ob_start(function ($buffer) {
+            \ob_start(function ($buffer) {
                 if ($this->caughtLength) {
                     // use substr_replace() instead of substr() for mbstring overloading resistance
-                    $cleanBuffer = substr_replace($buffer, '', 0, $this->caughtLength);
+                    $cleanBuffer = \substr_replace($buffer, '', 0, $this->caughtLength);
                     if (isset($cleanBuffer[0])) {
                         $buffer = $cleanBuffer;
                     }
                 }
-
                 return $buffer;
             });
-
             echo $this->caughtBuffer;
-            $caughtLength = ob_get_length();
+            $caughtLength = \ob_get_length();
         }
         $this->caughtBuffer = null;
-
         try {
-            call_user_func($this->handler, $exception);
+            \call_user_func($this->handler, $exception);
             $this->caughtLength = $caughtLength;
         } catch (\Exception $e) {
             if (!$caughtLength) {
@@ -150,7 +131,6 @@ class ExceptionHandler
             }
         }
     }
-
     /**
      * Sends the error associated with the given Exception as a plain PHP response.
      *
@@ -161,21 +141,18 @@ class ExceptionHandler
      */
     public function sendPhpResponse($exception)
     {
-        if (!$exception instanceof FlattenException) {
-            $exception = FlattenException::create($exception);
+        if (!$exception instanceof \Lauant\Forge\Symfony\Component\Debug\Exception\FlattenException) {
+            $exception = \Lauant\Forge\Symfony\Component\Debug\Exception\FlattenException::create($exception);
         }
-
-        if (!headers_sent()) {
-            header(sprintf('HTTP/1.0 %s', $exception->getStatusCode()));
+        if (!\headers_sent()) {
+            \header(\sprintf('HTTP/1.0 %s', $exception->getStatusCode()));
             foreach ($exception->getHeaders() as $name => $value) {
-                header($name.': '.$value, false);
+                \header($name . ': ' . $value, \false);
             }
-            header('Content-Type: text/html; charset='.$this->charset);
+            \header('Content-Type: text/html; charset=' . $this->charset);
         }
-
         echo $this->decorate($this->getContent($exception), $this->getStylesheet($exception));
     }
-
     /**
      * Gets the full HTML content associated with the given exception.
      *
@@ -185,13 +162,11 @@ class ExceptionHandler
      */
     public function getHtml($exception)
     {
-        if (!$exception instanceof FlattenException) {
-            $exception = FlattenException::create($exception);
+        if (!$exception instanceof \Lauant\Forge\Symfony\Component\Debug\Exception\FlattenException) {
+            $exception = \Lauant\Forge\Symfony\Component\Debug\Exception\FlattenException::create($exception);
         }
-
         return $this->decorate($this->getContent($exception), $this->getStylesheet($exception));
     }
-
     /**
      * Gets the HTML content associated with the given exception.
      *
@@ -199,7 +174,7 @@ class ExceptionHandler
      *
      * @return string The content as a string
      */
-    public function getContent(FlattenException $exception)
+    public function getContent(\Lauant\Forge\Symfony\Component\Debug\Exception\FlattenException $exception)
     {
         switch ($exception->getStatusCode()) {
             case 404:
@@ -208,17 +183,16 @@ class ExceptionHandler
             default:
                 $title = 'Whoops, looks like something went wrong.';
         }
-
         $content = '';
         if ($this->debug) {
             try {
-                $count = count($exception->getAllPrevious());
+                $count = \count($exception->getAllPrevious());
                 $total = $count + 1;
                 foreach ($exception->toArray() as $position => $e) {
                     $ind = $count - $position + 1;
                     $class = $this->formatClass($e['class']);
-                    $message = nl2br($this->escapeHtml($e['message']));
-                    $content .= sprintf(<<<'EOF'
+                    $message = \nl2br($this->escapeHtml($e['message']));
+                    $content .= \sprintf(<<<'EOF'
                         <h2 class="block_exception clear_fix">
                             <span class="exception_counter">%d/%d</span>
                             <span class="exception_title">%s%s:</span>
@@ -228,38 +202,35 @@ class ExceptionHandler
                             <ol class="traces list_exception">
 
 EOF
-                        , $ind, $total, $class, $this->formatPath($e['trace'][0]['file'], $e['trace'][0]['line']), $message);
+, $ind, $total, $class, $this->formatPath($e['trace'][0]['file'], $e['trace'][0]['line']), $message);
                     foreach ($e['trace'] as $trace) {
                         $content .= '       <li>';
                         if ($trace['function']) {
-                            $content .= sprintf('at %s%s%s(%s)', $this->formatClass($trace['class']), $trace['type'], $trace['function'], $this->formatArgs($trace['args']));
+                            $content .= \sprintf('at %s%s%s(%s)', $this->formatClass($trace['class']), $trace['type'], $trace['function'], $this->formatArgs($trace['args']));
                         }
                         if (isset($trace['file']) && isset($trace['line'])) {
                             $content .= $this->formatPath($trace['file'], $trace['line']);
                         }
                         $content .= "</li>\n";
                     }
-
                     $content .= "    </ol>\n</div>\n";
                 }
             } catch (\Exception $e) {
                 // something nasty happened and we cannot throw an exception anymore
                 if ($this->debug) {
-                    $title = sprintf('Exception thrown when handling an exception (%s: %s)', get_class($e), $this->escapeHtml($e->getMessage()));
+                    $title = \sprintf('Exception thrown when handling an exception (%s: %s)', \get_class($e), $this->escapeHtml($e->getMessage()));
                 } else {
                     $title = 'Whoops, looks like something went wrong.';
                 }
             }
         }
-
         return <<<EOF
             <div id="sf-resetcontent" class="sf-reset">
-                <h1>$title</h1>
-                $content
+                <h1>{$title}</h1>
+                {$content}
             </div>
 EOF;
     }
-
     /**
      * Gets the stylesheet associated with the given exception.
      *
@@ -267,7 +238,7 @@ EOF;
      *
      * @return string The stylesheet as a string
      */
-    public function getStylesheet(FlattenException $exception)
+    public function getStylesheet(\Lauant\Forge\Symfony\Component\Debug\Exception\FlattenException $exception)
     {
         return <<<'EOF'
             .sf-reset { font: 11px Verdana, Arial, sans-serif; color: #333 }
@@ -324,7 +295,6 @@ EOF;
             }
 EOF;
     }
-
     private function decorate($content, $css)
     {
         return <<<EOF
@@ -340,37 +310,30 @@ EOF;
             html { background: #eee; padding: 10px }
             img { border: 0; }
             #sf-resetcontent { width:970px; margin:0 auto; }
-            $css
+            {$css}
         </style>
     </head>
     <body>
-        $content
+        {$content}
     </body>
 </html>
 EOF;
     }
-
     private function formatClass($class)
     {
-        $parts = explode('\\', $class);
-
-        return sprintf('<abbr title="%s">%s</abbr>', $class, array_pop($parts));
+        $parts = \explode('\\', $class);
+        return \sprintf('<abbr title="%s">%s</abbr>', $class, \array_pop($parts));
     }
-
     private function formatPath($path, $line)
     {
         $path = $this->escapeHtml($path);
-        $file = preg_match('#[^/\\\\]*$#', $path, $file) ? $file[0] : $path;
-
+        $file = \preg_match('#[^/\\\\]*$#', $path, $file) ? $file[0] : $path;
         if ($linkFormat = $this->fileLinkFormat) {
-            $link = strtr($this->escapeHtml($linkFormat), array('%f' => $path, '%l' => (int) $line));
-
-            return sprintf(' in <a href="%s" title="Go to source">%s line %d</a>', $link, $file, $line);
+            $link = \strtr($this->escapeHtml($linkFormat), array('%f' => $path, '%l' => (int) $line));
+            return \sprintf(' in <a href="%s" title="Go to source">%s line %d</a>', $link, $file, $line);
         }
-
-        return sprintf(' in <a title="%s line %3$d" ondblclick="var f=this.innerHTML;this.innerHTML=this.title;this.title=f;">%s line %d</a>', $path, $file, $line);
+        return \sprintf(' in <a title="%s line %3$d" ondblclick="var f=this.innerHTML;this.innerHTML=this.title;this.title=f;">%s line %d</a>', $path, $file, $line);
     }
-
     /**
      * Formats an array as a string.
      *
@@ -383,32 +346,29 @@ EOF;
         $result = array();
         foreach ($args as $key => $item) {
             if ('object' === $item[0]) {
-                $formattedValue = sprintf('<em>object</em>(%s)', $this->formatClass($item[1]));
+                $formattedValue = \sprintf('<em>object</em>(%s)', $this->formatClass($item[1]));
             } elseif ('array' === $item[0]) {
-                $formattedValue = sprintf('<em>array</em>(%s)', is_array($item[1]) ? $this->formatArgs($item[1]) : $item[1]);
+                $formattedValue = \sprintf('<em>array</em>(%s)', \is_array($item[1]) ? $this->formatArgs($item[1]) : $item[1]);
             } elseif ('string' === $item[0]) {
-                $formattedValue = sprintf("'%s'", $this->escapeHtml($item[1]));
+                $formattedValue = \sprintf("'%s'", $this->escapeHtml($item[1]));
             } elseif ('null' === $item[0]) {
                 $formattedValue = '<em>null</em>';
             } elseif ('boolean' === $item[0]) {
-                $formattedValue = '<em>'.strtolower(var_export($item[1], true)).'</em>';
+                $formattedValue = '<em>' . \strtolower(\var_export($item[1], \true)) . '</em>';
             } elseif ('resource' === $item[0]) {
                 $formattedValue = '<em>resource</em>';
             } else {
-                $formattedValue = str_replace("\n", '', var_export($this->escapeHtml((string) $item[1]), true));
+                $formattedValue = \str_replace("\n", '', \var_export($this->escapeHtml((string) $item[1]), \true));
             }
-
-            $result[] = is_int($key) ? $formattedValue : sprintf("'%s' => %s", $key, $formattedValue);
+            $result[] = \is_int($key) ? $formattedValue : \sprintf("'%s' => %s", $key, $formattedValue);
         }
-
-        return implode(', ', $result);
+        return \implode(', ', $result);
     }
-
     /**
      * HTML-encodes a string.
      */
     private function escapeHtml($str)
     {
-        return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, $this->charset);
+        return \htmlspecialchars($str, \ENT_QUOTES | \ENT_SUBSTITUTE, $this->charset);
     }
 }

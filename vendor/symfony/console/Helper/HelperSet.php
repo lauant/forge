@@ -8,12 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Helper;
 
-namespace Symfony\Component\Console\Helper;
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-
+use Lauant\Forge\Symfony\Component\Console\Command\Command;
+use Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException;
 /**
  * HelperSet represents a set of helpers to be used with a command.
  *
@@ -26,7 +24,6 @@ class HelperSet implements \IteratorAggregate
      */
     private $helpers = array();
     private $command;
-
     /**
      * @param Helper[] $helpers An array of helper
      */
@@ -36,23 +33,20 @@ class HelperSet implements \IteratorAggregate
             $this->set($helper, \is_int($alias) ? null : $alias);
         }
     }
-
     /**
      * Sets a helper.
      *
      * @param HelperInterface $helper The helper instance
      * @param string          $alias  An alias
      */
-    public function set(HelperInterface $helper, $alias = null)
+    public function set(\Lauant\Forge\Symfony\Component\Console\Helper\HelperInterface $helper, $alias = null)
     {
         $this->helpers[$helper->getName()] = $helper;
         if (null !== $alias) {
             $this->helpers[$alias] = $helper;
         }
-
         $helper->setHelperSet($this);
     }
-
     /**
      * Returns true if the helper if defined.
      *
@@ -64,7 +58,6 @@ class HelperSet implements \IteratorAggregate
     {
         return isset($this->helpers[$name]);
     }
-
     /**
      * Gets a helper value.
      *
@@ -77,25 +70,21 @@ class HelperSet implements \IteratorAggregate
     public function get($name)
     {
         if (!$this->has($name)) {
-            throw new InvalidArgumentException(sprintf('The helper "%s" is not defined.', $name));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException(\sprintf('The helper "%s" is not defined.', $name));
         }
-
-        if ('dialog' === $name && $this->helpers[$name] instanceof DialogHelper) {
-            @trigger_error('"Symfony\Component\Console\Helper\DialogHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\Component\Console\Helper\QuestionHelper" instead.', E_USER_DEPRECATED);
-        } elseif ('progress' === $name && $this->helpers[$name] instanceof ProgressHelper) {
-            @trigger_error('"Symfony\Component\Console\Helper\ProgressHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\Component\Console\Helper\ProgressBar" instead.', E_USER_DEPRECATED);
-        } elseif ('table' === $name && $this->helpers[$name] instanceof TableHelper) {
-            @trigger_error('"Symfony\Component\Console\Helper\TableHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\Component\Console\Helper\Table" instead.', E_USER_DEPRECATED);
+        if ('dialog' === $name && $this->helpers[$name] instanceof \Lauant\Forge\Symfony\Component\Console\Helper\DialogHelper) {
+            @\trigger_error('"Symfony\\Component\\Console\\Helper\\DialogHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\\Component\\Console\\Helper\\QuestionHelper" instead.', \E_USER_DEPRECATED);
+        } elseif ('progress' === $name && $this->helpers[$name] instanceof \Lauant\Forge\Symfony\Component\Console\Helper\ProgressHelper) {
+            @\trigger_error('"Symfony\\Component\\Console\\Helper\\ProgressHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\\Component\\Console\\Helper\\ProgressBar" instead.', \E_USER_DEPRECATED);
+        } elseif ('table' === $name && $this->helpers[$name] instanceof \Lauant\Forge\Symfony\Component\Console\Helper\TableHelper) {
+            @\trigger_error('"Symfony\\Component\\Console\\Helper\\TableHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\\Component\\Console\\Helper\\Table" instead.', \E_USER_DEPRECATED);
         }
-
         return $this->helpers[$name];
     }
-
-    public function setCommand(Command $command = null)
+    public function setCommand(\Lauant\Forge\Symfony\Component\Console\Command\Command $command = null)
     {
         $this->command = $command;
     }
-
     /**
      * Gets the command associated with this helper set.
      *
@@ -105,7 +94,6 @@ class HelperSet implements \IteratorAggregate
     {
         return $this->command;
     }
-
     /**
      * @return Helper[]
      */

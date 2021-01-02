@@ -8,15 +8,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Helper;
 
-namespace Symfony\Component\Console\Helper;
-
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
+use Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException;
+use Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException;
+use Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Lauant\Forge\Symfony\Component\Console\Output\OutputInterface;
 /**
  * The Dialog class provides helpers to interact with the user.
  *
@@ -25,19 +23,17 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @deprecated since version 2.5, to be removed in 3.0.
  *             Use {@link \Symfony\Component\Console\Helper\QuestionHelper} instead.
  */
-class DialogHelper extends InputAwareHelper
+class DialogHelper extends \Lauant\Forge\Symfony\Component\Console\Helper\InputAwareHelper
 {
     private $inputStream;
     private static $shell;
     private static $stty;
-
-    public function __construct($triggerDeprecationError = true)
+    public function __construct($triggerDeprecationError = \true)
     {
         if ($triggerDeprecationError) {
-            @trigger_error('"Symfony\Component\Console\Helper\DialogHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\Component\Console\Helper\QuestionHelper" instead.', E_USER_DEPRECATED);
+            @\trigger_error('"Symfony\\Component\\Console\\Helper\\DialogHelper" is deprecated since Symfony 2.5 and will be removed in 3.0. Use "Symfony\\Component\\Console\\Helper\\QuestionHelper" instead.', \E_USER_DEPRECATED);
         }
     }
-
     /**
      * Asks the user to select a value.
      *
@@ -53,54 +49,43 @@ class DialogHelper extends InputAwareHelper
      *
      * @throws InvalidArgumentException
      */
-    public function select(OutputInterface $output, $question, $choices, $default = null, $attempts = false, $errorMessage = 'Value "%s" is invalid', $multiselect = false)
+    public function select(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, $question, $choices, $default = null, $attempts = \false, $errorMessage = 'Value "%s" is invalid', $multiselect = \false)
     {
-        if ($output instanceof ConsoleOutputInterface) {
+        if ($output instanceof \Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutputInterface) {
             $output = $output->getErrorOutput();
         }
-
-        $width = max(array_map('strlen', array_keys($choices)));
-
+        $width = \max(\array_map('strlen', \array_keys($choices)));
         $messages = (array) $question;
         foreach ($choices as $key => $value) {
-            $messages[] = sprintf("  [<info>%-{$width}s</info>] %s", $key, $value);
+            $messages[] = \sprintf("  [<info>%-{$width}s</info>] %s", $key, $value);
         }
-
         $output->writeln($messages);
-
-        $result = $this->askAndValidate($output, '> ', function ($picked) use ($choices, $errorMessage, $multiselect) {
+        $result = $this->askAndValidate($output, '> ', function ($picked) use($choices, $errorMessage, $multiselect) {
             // Collapse all spaces.
-            $selectedChoices = str_replace(' ', '', $picked);
-
+            $selectedChoices = \str_replace(' ', '', $picked);
             if ($multiselect) {
                 // Check for a separated comma values
-                if (!preg_match('/^[a-zA-Z0-9_-]+(?:,[a-zA-Z0-9_-]+)*$/', $selectedChoices, $matches)) {
-                    throw new InvalidArgumentException(sprintf($errorMessage, $picked));
+                if (!\preg_match('/^[a-zA-Z0-9_-]+(?:,[a-zA-Z0-9_-]+)*$/', $selectedChoices, $matches)) {
+                    throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException(\sprintf($errorMessage, $picked));
                 }
-                $selectedChoices = explode(',', $selectedChoices);
+                $selectedChoices = \explode(',', $selectedChoices);
             } else {
                 $selectedChoices = array($picked);
             }
-
             $multiselectChoices = array();
-
             foreach ($selectedChoices as $value) {
                 if (empty($choices[$value])) {
-                    throw new InvalidArgumentException(sprintf($errorMessage, $value));
+                    throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException(\sprintf($errorMessage, $value));
                 }
                 $multiselectChoices[] = $value;
             }
-
             if ($multiselect) {
                 return $multiselectChoices;
             }
-
             return $picked;
         }, $attempts, $default);
-
         return $result;
     }
-
     /**
      * Asks a question to the user.
      *
@@ -113,54 +98,43 @@ class DialogHelper extends InputAwareHelper
      *
      * @throws RuntimeException If there is no data to read in the input stream
      */
-    public function ask(OutputInterface $output, $question, $default = null, array $autocomplete = null)
+    public function ask(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, $question, $default = null, array $autocomplete = null)
     {
         if ($this->input && !$this->input->isInteractive()) {
             return $default;
         }
-
-        if ($output instanceof ConsoleOutputInterface) {
+        if ($output instanceof \Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutputInterface) {
             $output = $output->getErrorOutput();
         }
-
         $output->write($question);
-
-        $inputStream = $this->inputStream ?: STDIN;
-
+        $inputStream = $this->inputStream ?: \STDIN;
         if (null === $autocomplete || !$this->hasSttyAvailable()) {
-            $ret = fgets($inputStream, 4096);
-            if (false === $ret) {
-                throw new RuntimeException('Aborted');
+            $ret = \fgets($inputStream, 4096);
+            if (\false === $ret) {
+                throw new \Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException('Aborted');
             }
-            $ret = trim($ret);
+            $ret = \trim($ret);
         } else {
             $ret = '';
-
             $i = 0;
             $ofs = -1;
             $matches = $autocomplete;
             $numMatches = \count($matches);
-
-            $sttyMode = shell_exec('stty -g');
-
+            $sttyMode = \shell_exec('stty -g');
             // Disable icanon (so we can fread each keypress) and echo (we'll do echoing here instead)
-            shell_exec('stty -icanon -echo');
-
+            \shell_exec('stty -icanon -echo');
             // Add highlighted text style
-            $output->getFormatter()->setStyle('hl', new OutputFormatterStyle('black', 'white'));
-
+            $output->getFormatter()->setStyle('hl', new \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'white'));
             // Read a keypress
-            while (!feof($inputStream)) {
-                $c = fread($inputStream, 1);
-
+            while (!\feof($inputStream)) {
+                $c = \fread($inputStream, 1);
                 // Backspace Character
-                if ("\177" === $c) {
+                if ("" === $c) {
                     if (0 === $numMatches && 0 !== $i) {
                         --$i;
                         // Move cursor backwards
-                        $output->write("\033[1D");
+                        $output->write("\33[1D");
                     }
-
                     if (0 === $i) {
                         $ofs = -1;
                         $matches = $autocomplete;
@@ -168,24 +142,20 @@ class DialogHelper extends InputAwareHelper
                     } else {
                         $numMatches = 0;
                     }
-
                     // Pop the last character off the end of our string
-                    $ret = substr($ret, 0, $i);
-                } elseif ("\033" === $c) {
+                    $ret = \substr($ret, 0, $i);
+                } elseif ("\33" === $c) {
                     // Did we read an escape sequence?
-                    $c .= fread($inputStream, 2);
-
+                    $c .= \fread($inputStream, 2);
                     // A = Up Arrow. B = Down Arrow
                     if (isset($c[2]) && ('A' === $c[2] || 'B' === $c[2])) {
                         if ('A' === $c[2] && -1 === $ofs) {
                             $ofs = 0;
                         }
-
                         if (0 === $numMatches) {
                             continue;
                         }
-
-                        $ofs += ('A' === $c[2]) ? -1 : 1;
+                        $ofs += 'A' === $c[2] ? -1 : 1;
                         $ofs = ($numMatches + $ofs) % $numMatches;
                     }
                 } elseif (\ord($c) < 32) {
@@ -193,55 +163,45 @@ class DialogHelper extends InputAwareHelper
                         if ($numMatches > 0 && -1 !== $ofs) {
                             $ret = $matches[$ofs];
                             // Echo out remaining chars for current match
-                            $output->write(substr($ret, $i));
+                            $output->write(\substr($ret, $i));
                             $i = \strlen($ret);
                         }
-
                         if ("\n" === $c) {
                             $output->write($c);
                             break;
                         }
-
                         $numMatches = 0;
                     }
-
                     continue;
                 } else {
                     $output->write($c);
                     $ret .= $c;
                     ++$i;
-
                     $numMatches = 0;
                     $ofs = 0;
-
                     foreach ($autocomplete as $value) {
                         // If typed characters match the beginning chunk of value (e.g. [AcmeDe]moBundle)
-                        if (0 === strpos($value, $ret) && $i !== \strlen($value)) {
+                        if (0 === \strpos($value, $ret) && $i !== \strlen($value)) {
                             $matches[$numMatches++] = $value;
                         }
                     }
                 }
-
                 // Erase characters from cursor to end of line
-                $output->write("\033[K");
-
+                $output->write("\33[K");
                 if ($numMatches > 0 && -1 !== $ofs) {
                     // Save cursor position
                     $output->write("\0337");
                     // Write highlighted text
-                    $output->write('<hl>'.substr($matches[$ofs], $i).'</hl>');
+                    $output->write('<hl>' . \substr($matches[$ofs], $i) . '</hl>');
                     // Restore cursor position
-                    $output->write("\0338");
+                    $output->write("\338");
                 }
             }
-
             // Reset stty so it behaves normally again
-            shell_exec(sprintf('stty %s', $sttyMode));
+            \shell_exec(\sprintf('stty %s', $sttyMode));
         }
-
         return \strlen($ret) > 0 ? $ret : $default;
     }
-
     /**
      * Asks a confirmation to the user.
      *
@@ -253,20 +213,17 @@ class DialogHelper extends InputAwareHelper
      *
      * @return bool true if the user has confirmed, false otherwise
      */
-    public function askConfirmation(OutputInterface $output, $question, $default = true)
+    public function askConfirmation(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, $question, $default = \true)
     {
         $answer = 'z';
-        while ($answer && !\in_array(strtolower($answer[0]), array('y', 'n'))) {
+        while ($answer && !\in_array(\strtolower($answer[0]), array('y', 'n'))) {
             $answer = $this->ask($output, $question);
         }
-
-        if (false === $default) {
-            return $answer && 'y' == strtolower($answer[0]);
+        if (\false === $default) {
+            return $answer && 'y' == \strtolower($answer[0]);
         }
-
-        return !$answer || 'y' == strtolower($answer[0]);
+        return !$answer || 'y' == \strtolower($answer[0]);
     }
-
     /**
      * Asks a question to the user, the response is hidden.
      *
@@ -278,69 +235,53 @@ class DialogHelper extends InputAwareHelper
      *
      * @throws RuntimeException In case the fallback is deactivated and the response can not be hidden
      */
-    public function askHiddenResponse(OutputInterface $output, $question, $fallback = true)
+    public function askHiddenResponse(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, $question, $fallback = \true)
     {
-        if ($output instanceof ConsoleOutputInterface) {
+        if ($output instanceof \Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutputInterface) {
             $output = $output->getErrorOutput();
         }
-
         if ('\\' === \DIRECTORY_SEPARATOR) {
-            $exe = __DIR__.'/../Resources/bin/hiddeninput.exe';
-
+            $exe = __DIR__ . '/../Resources/bin/hiddeninput.exe';
             // handle code running from a phar
-            if ('phar:' === substr(__FILE__, 0, 5)) {
-                $tmpExe = sys_get_temp_dir().'/hiddeninput.exe';
-                copy($exe, $tmpExe);
+            if ('phar:' === \substr(__FILE__, 0, 5)) {
+                $tmpExe = \sys_get_temp_dir() . '/hiddeninput.exe';
+                \copy($exe, $tmpExe);
                 $exe = $tmpExe;
             }
-
             $output->write($question);
-            $value = rtrim(shell_exec($exe));
+            $value = \rtrim(\shell_exec($exe));
             $output->writeln('');
-
             if (isset($tmpExe)) {
-                unlink($tmpExe);
+                \unlink($tmpExe);
             }
-
             return $value;
         }
-
         if ($this->hasSttyAvailable()) {
             $output->write($question);
-
-            $sttyMode = shell_exec('stty -g');
-
-            shell_exec('stty -echo');
-            $value = fgets($this->inputStream ?: STDIN, 4096);
-            shell_exec(sprintf('stty %s', $sttyMode));
-
-            if (false === $value) {
-                throw new RuntimeException('Aborted');
+            $sttyMode = \shell_exec('stty -g');
+            \shell_exec('stty -echo');
+            $value = \fgets($this->inputStream ?: \STDIN, 4096);
+            \shell_exec(\sprintf('stty %s', $sttyMode));
+            if (\false === $value) {
+                throw new \Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException('Aborted');
             }
-
-            $value = trim($value);
+            $value = \trim($value);
             $output->writeln('');
-
             return $value;
         }
-
-        if (false !== $shell = $this->getShell()) {
+        if (\false !== ($shell = $this->getShell())) {
             $output->write($question);
             $readCmd = 'csh' === $shell ? 'set mypassword = $<' : 'read -r mypassword';
-            $command = sprintf("/usr/bin/env %s -c 'stty -echo; %s; stty echo; echo \$mypassword'", $shell, $readCmd);
-            $value = rtrim(shell_exec($command));
+            $command = \sprintf("/usr/bin/env %s -c 'stty -echo; %s; stty echo; echo \$mypassword'", $shell, $readCmd);
+            $value = \rtrim(\shell_exec($command));
             $output->writeln('');
-
             return $value;
         }
-
         if ($fallback) {
             return $this->ask($output, $question);
         }
-
-        throw new RuntimeException('Unable to hide the response');
+        throw new \Lauant\Forge\Symfony\Component\Console\Exception\RuntimeException('Unable to hide the response');
     }
-
     /**
      * Asks for a value and validates the response.
      *
@@ -359,17 +300,14 @@ class DialogHelper extends InputAwareHelper
      *
      * @throws \Exception When any of the validators return an error
      */
-    public function askAndValidate(OutputInterface $output, $question, $validator, $attempts = false, $default = null, array $autocomplete = null)
+    public function askAndValidate(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, $question, $validator, $attempts = \false, $default = null, array $autocomplete = null)
     {
         $that = $this;
-
-        $interviewer = function () use ($output, $question, $default, $autocomplete, $that) {
+        $interviewer = function () use($output, $question, $default, $autocomplete, $that) {
             return $that->ask($output, $question, $default, $autocomplete);
         };
-
         return $this->validateAttempts($interviewer, $output, $validator, $attempts);
     }
-
     /**
      * Asks for a value, hide and validates the response.
      *
@@ -388,17 +326,14 @@ class DialogHelper extends InputAwareHelper
      * @throws \Exception       When any of the validators return an error
      * @throws RuntimeException In case the fallback is deactivated and the response can not be hidden
      */
-    public function askHiddenResponseAndValidate(OutputInterface $output, $question, $validator, $attempts = false, $fallback = true)
+    public function askHiddenResponseAndValidate(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, $question, $validator, $attempts = \false, $fallback = \true)
     {
         $that = $this;
-
-        $interviewer = function () use ($output, $question, $fallback, $that) {
+        $interviewer = function () use($output, $question, $fallback, $that) {
             return $that->askHiddenResponse($output, $question, $fallback);
         };
-
         return $this->validateAttempts($interviewer, $output, $validator, $attempts);
     }
-
     /**
      * Sets the input stream to read from when interacting with the user.
      *
@@ -410,7 +345,6 @@ class DialogHelper extends InputAwareHelper
     {
         $this->inputStream = $stream;
     }
-
     /**
      * Returns the helper's input stream.
      *
@@ -420,7 +354,6 @@ class DialogHelper extends InputAwareHelper
     {
         return $this->inputStream;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -428,7 +361,6 @@ class DialogHelper extends InputAwareHelper
     {
         return 'dialog';
     }
-
     /**
      * Return a valid Unix shell.
      *
@@ -439,34 +371,27 @@ class DialogHelper extends InputAwareHelper
         if (null !== self::$shell) {
             return self::$shell;
         }
-
-        self::$shell = false;
-
-        if (file_exists('/usr/bin/env')) {
+        self::$shell = \false;
+        if (\file_exists('/usr/bin/env')) {
             // handle other OSs with bash/zsh/ksh/csh if available to hide the answer
             $test = "/usr/bin/env %s -c 'echo OK' 2> /dev/null";
             foreach (array('bash', 'zsh', 'ksh', 'csh') as $sh) {
-                if ('OK' === rtrim(shell_exec(sprintf($test, $sh)))) {
+                if ('OK' === \rtrim(\shell_exec(\sprintf($test, $sh)))) {
                     self::$shell = $sh;
                     break;
                 }
             }
         }
-
         return self::$shell;
     }
-
     private function hasSttyAvailable()
     {
         if (null !== self::$stty) {
             return self::$stty;
         }
-
-        exec('stty 2>&1', $output, $exitcode);
-
+        \exec('stty 2>&1', $output, $exitcode);
         return self::$stty = 0 === $exitcode;
     }
-
     /**
      * Validate an attempt.
      *
@@ -479,24 +404,21 @@ class DialogHelper extends InputAwareHelper
      *
      * @throws \Exception In case the max number of attempts has been reached and no valid response has been given
      */
-    private function validateAttempts($interviewer, OutputInterface $output, $validator, $attempts)
+    private function validateAttempts($interviewer, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output, $validator, $attempts)
     {
-        if ($output instanceof ConsoleOutputInterface) {
+        if ($output instanceof \Lauant\Forge\Symfony\Component\Console\Output\ConsoleOutputInterface) {
             $output = $output->getErrorOutput();
         }
-
         $e = null;
-        while (false === $attempts || $attempts--) {
+        while (\false === $attempts || $attempts--) {
             if (null !== $e) {
                 $output->writeln($this->getHelperSet()->get('formatter')->formatBlock($e->getMessage(), 'error'));
             }
-
             try {
                 return \call_user_func($validator, $interviewer());
             } catch (\Exception $e) {
             }
         }
-
         throw $e;
     }
 }

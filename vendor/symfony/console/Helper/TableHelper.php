@@ -8,13 +8,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Helper;
 
-namespace Symfony\Component\Console\Helper;
-
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\Console\Output\OutputInterface;
-
+use Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException;
+use Lauant\Forge\Symfony\Component\Console\Output\NullOutput;
+use Lauant\Forge\Symfony\Component\Console\Output\OutputInterface;
 /**
  * Provides helpers to display table output.
  *
@@ -24,23 +22,19 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @deprecated since version 2.5, to be removed in 3.0
  *             Use {@link Table} instead.
  */
-class TableHelper extends Helper
+class TableHelper extends \Lauant\Forge\Symfony\Component\Console\Helper\Helper
 {
     const LAYOUT_DEFAULT = 0;
     const LAYOUT_BORDERLESS = 1;
     const LAYOUT_COMPACT = 2;
-
     private $table;
-
-    public function __construct($triggerDeprecationError = true)
+    public function __construct($triggerDeprecationError = \true)
     {
         if ($triggerDeprecationError) {
-            @trigger_error('The '.__CLASS__.' class is deprecated since Symfony 2.5 and will be removed in 3.0. Use the Symfony\Component\Console\Helper\Table class instead.', E_USER_DEPRECATED);
+            @\trigger_error('The ' . __CLASS__ . ' class is deprecated since Symfony 2.5 and will be removed in 3.0. Use the Symfony\\Component\\Console\\Helper\\Table class instead.', \E_USER_DEPRECATED);
         }
-
-        $this->table = new Table(new NullOutput());
+        $this->table = new \Lauant\Forge\Symfony\Component\Console\Helper\Table(new \Lauant\Forge\Symfony\Component\Console\Output\NullOutput());
     }
-
     /**
      * Sets table layout type.
      *
@@ -56,57 +50,42 @@ class TableHelper extends Helper
             case self::LAYOUT_BORDERLESS:
                 $this->table->setStyle('borderless');
                 break;
-
             case self::LAYOUT_COMPACT:
                 $this->table->setStyle('compact');
                 break;
-
             case self::LAYOUT_DEFAULT:
                 $this->table->setStyle('default');
                 break;
-
             default:
-                throw new InvalidArgumentException(sprintf('Invalid table layout "%s".', $layout));
+                throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException(\sprintf('Invalid table layout "%s".', $layout));
         }
-
         return $this;
     }
-
     public function setHeaders(array $headers)
     {
         $this->table->setHeaders($headers);
-
         return $this;
     }
-
     public function setRows(array $rows)
     {
         $this->table->setRows($rows);
-
         return $this;
     }
-
     public function addRows(array $rows)
     {
         $this->table->addRows($rows);
-
         return $this;
     }
-
     public function addRow(array $row)
     {
         $this->table->addRow($row);
-
         return $this;
     }
-
     public function setRow($column, array $row)
     {
         $this->table->setRow($column, $row);
-
         return $this;
     }
-
     /**
      * Sets padding character, used for cell padding.
      *
@@ -117,10 +96,8 @@ class TableHelper extends Helper
     public function setPaddingChar($paddingChar)
     {
         $this->table->getStyle()->setPaddingChar($paddingChar);
-
         return $this;
     }
-
     /**
      * Sets horizontal border character.
      *
@@ -131,10 +108,8 @@ class TableHelper extends Helper
     public function setHorizontalBorderChar($horizontalBorderChar)
     {
         $this->table->getStyle()->setHorizontalBorderChar($horizontalBorderChar);
-
         return $this;
     }
-
     /**
      * Sets vertical border character.
      *
@@ -145,10 +120,8 @@ class TableHelper extends Helper
     public function setVerticalBorderChar($verticalBorderChar)
     {
         $this->table->getStyle()->setVerticalBorderChar($verticalBorderChar);
-
         return $this;
     }
-
     /**
      * Sets crossing character.
      *
@@ -159,10 +132,8 @@ class TableHelper extends Helper
     public function setCrossingChar($crossingChar)
     {
         $this->table->getStyle()->setCrossingChar($crossingChar);
-
         return $this;
     }
-
     /**
      * Sets header cell format.
      *
@@ -173,10 +144,8 @@ class TableHelper extends Helper
     public function setCellHeaderFormat($cellHeaderFormat)
     {
         $this->table->getStyle()->setCellHeaderFormat($cellHeaderFormat);
-
         return $this;
     }
-
     /**
      * Sets row cell format.
      *
@@ -187,10 +156,8 @@ class TableHelper extends Helper
     public function setCellRowFormat($cellRowFormat)
     {
         $this->table->getStyle()->setCellHeaderFormat($cellRowFormat);
-
         return $this;
     }
-
     /**
      * Sets row cell content format.
      *
@@ -201,10 +168,8 @@ class TableHelper extends Helper
     public function setCellRowContentFormat($cellRowContentFormat)
     {
         $this->table->getStyle()->setCellRowContentFormat($cellRowContentFormat);
-
         return $this;
     }
-
     /**
      * Sets table border format.
      *
@@ -215,10 +180,8 @@ class TableHelper extends Helper
     public function setBorderFormat($borderFormat)
     {
         $this->table->getStyle()->setBorderFormat($borderFormat);
-
         return $this;
     }
-
     /**
      * Sets cell padding type.
      *
@@ -229,10 +192,8 @@ class TableHelper extends Helper
     public function setPadType($padType)
     {
         $this->table->getStyle()->setPadType($padType);
-
         return $this;
     }
-
     /**
      * Renders table to output.
      *
@@ -245,15 +206,13 @@ class TableHelper extends Helper
      * | 960-425-059-0 | The Lord of the Rings | J. R. R. Tolkien |
      * +---------------+-----------------------+------------------+
      */
-    public function render(OutputInterface $output)
+    public function render(\Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output)
     {
         $p = new \ReflectionProperty($this->table, 'output');
-        $p->setAccessible(true);
+        $p->setAccessible(\true);
         $p->setValue($this->table, $output);
-
         $this->table->render();
     }
-
     /**
      * {@inheritdoc}
      */

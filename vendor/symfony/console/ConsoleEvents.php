@@ -8,8 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-namespace Symfony\Component\Console;
+namespace Lauant\Forge\Symfony\Component\Console;
 
 /**
  * Contains all events dispatched by an Application.
@@ -29,7 +28,6 @@ final class ConsoleEvents
      * @Event
      */
     const COMMAND = 'console.command';
-
     /**
      * The TERMINATE event allows you to attach listeners after a command is
      * executed by the console.
@@ -40,7 +38,6 @@ final class ConsoleEvents
      * @Event
      */
     const TERMINATE = 'console.terminate';
-
     /**
      * The EXCEPTION event occurs when an uncaught exception appears.
      *

@@ -1,11 +1,11 @@
 <?php 
 
-namespace Lauant\CMD;
+namespace Lauant\Forge;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
+use Lauant\Forge\Symfony\Component\Console\Command\Command;
+use Lauant\Forge\Symfony\Component\Console\Input\InputInterface;
+use Lauant\Forge\Symfony\Component\Console\Input\InputArgument;
+use Lauant\Forge\Symfony\Component\Console\Output\OutputInterface;
 
 class InitializeCommand extends Command {
 

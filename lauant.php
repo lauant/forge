@@ -2,8 +2,8 @@
 
 <?php
 
-use Symfony\Component\Console\Application;
-use Lauant\CMD\InitializeCommand;
+use Lauant\Forge\Symfony\Component\Console\Application;
+use Lauant\Forge\InitializeCommand;
 
 require 'vendor/autoload.php';
 

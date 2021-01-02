@@ -8,15 +8,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Tester;
 
-namespace Symfony\Component\Console\Tester;
-
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
-
+use Lauant\Forge\Symfony\Component\Console\Application;
+use Lauant\Forge\Symfony\Component\Console\Input\ArrayInput;
+use Lauant\Forge\Symfony\Component\Console\Input\InputInterface;
+use Lauant\Forge\Symfony\Component\Console\Output\OutputInterface;
+use Lauant\Forge\Symfony\Component\Console\Output\StreamOutput;
 /**
  * Eases the testing of console applications.
  *
@@ -33,12 +31,10 @@ class ApplicationTester
     private $input;
     private $output;
     private $statusCode;
-
-    public function __construct(Application $application)
+    public function __construct(\Lauant\Forge\Symfony\Component\Console\Application $application)
     {
         $this->application = $application;
     }
-
     /**
      * Executes the application.
      *
@@ -55,22 +51,19 @@ class ApplicationTester
      */
     public function run(array $input, $options = array())
     {
-        $this->input = new ArrayInput($input);
+        $this->input = new \Lauant\Forge\Symfony\Component\Console\Input\ArrayInput($input);
         if (isset($options['interactive'])) {
             $this->input->setInteractive($options['interactive']);
         }
-
-        $this->output = new StreamOutput(fopen('php://memory', 'w', false));
+        $this->output = new \Lauant\Forge\Symfony\Component\Console\Output\StreamOutput(\fopen('php://memory', 'w', \false));
         if (isset($options['decorated'])) {
             $this->output->setDecorated($options['decorated']);
         }
         if (isset($options['verbosity'])) {
             $this->output->setVerbosity($options['verbosity']);
         }
-
         return $this->statusCode = $this->application->run($this->input, $this->output);
     }
-
     /**
      * Gets the display returned by the last execution of the application.
      *
@@ -78,19 +71,15 @@ class ApplicationTester
      *
      * @return string The display
      */
-    public function getDisplay($normalize = false)
+    public function getDisplay($normalize = \false)
     {
-        rewind($this->output->getStream());
-
-        $display = stream_get_contents($this->output->getStream());
-
+        \rewind($this->output->getStream());
+        $display = \stream_get_contents($this->output->getStream());
         if ($normalize) {
-            $display = str_replace(PHP_EOL, "\n", $display);
+            $display = \str_replace(\PHP_EOL, "\n", $display);
         }
-
         return $display;
     }
-
     /**
      * Gets the input instance used by the last execution of the application.
      *
@@ -100,7 +89,6 @@ class ApplicationTester
     {
         return $this->input;
     }
-
     /**
      * Gets the output instance used by the last execution of the application.
      *
@@ -110,7 +98,6 @@ class ApplicationTester
     {
         return $this->output;
     }
-
     /**
      * Gets the status code returned by the last execution of the application.
      *

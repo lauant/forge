@@ -8,22 +8,19 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Formatter;
 
-namespace Symfony\Component\Console\Formatter;
-
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-
+use Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException;
 /**
  * Formatter class for console output.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class OutputFormatter implements OutputFormatterInterface
+class OutputFormatter implements \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterInterface
 {
     private $decorated;
     private $styles = array();
     private $styleStack;
-
     /**
      * Escapes "<" special char in given text.
      *
@@ -33,11 +30,9 @@ class OutputFormatter implements OutputFormatterInterface
      */
     public static function escape($text)
     {
-        $text = preg_replace('/([^\\\\]?)</', '$1\\<', $text);
-
+        $text = \preg_replace('/([^\\\\]?)</', '$1\\<', $text);
         return self::escapeTrailingBackslash($text);
     }
-
     /**
      * Escapes trailing "\" in given text.
      *
@@ -49,38 +44,32 @@ class OutputFormatter implements OutputFormatterInterface
      */
     public static function escapeTrailingBackslash($text)
     {
-        if ('\\' === substr($text, -1)) {
+        if ('\\' === \substr($text, -1)) {
             $len = \strlen($text);
-            $text = rtrim($text, '\\');
-            $text = str_replace("\0", '', $text);
-            $text .= str_repeat("\0", $len - \strlen($text));
+            $text = \rtrim($text, '\\');
+            $text = \str_replace("\0", '', $text);
+            $text .= \str_repeat("\0", $len - \strlen($text));
         }
-
         return $text;
     }
-
     /**
      * Initializes console output formatter.
      *
      * @param bool                            $decorated Whether this formatter should actually decorate strings
      * @param OutputFormatterStyleInterface[] $styles    Array of "name => FormatterStyle" instances
      */
-    public function __construct($decorated = false, array $styles = array())
+    public function __construct($decorated = \false, array $styles = array())
     {
         $this->decorated = (bool) $decorated;
-
-        $this->setStyle('error', new OutputFormatterStyle('white', 'red'));
-        $this->setStyle('info', new OutputFormatterStyle('green'));
-        $this->setStyle('comment', new OutputFormatterStyle('yellow'));
-        $this->setStyle('question', new OutputFormatterStyle('black', 'cyan'));
-
+        $this->setStyle('error', new \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyle('white', 'red'));
+        $this->setStyle('info', new \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyle('green'));
+        $this->setStyle('comment', new \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyle('yellow'));
+        $this->setStyle('question', new \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'cyan'));
         foreach ($styles as $name => $style) {
             $this->setStyle($name, $style);
         }
-
-        $this->styleStack = new OutputFormatterStyleStack();
+        $this->styleStack = new \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyleStack();
     }
-
     /**
      * {@inheritdoc}
      */
@@ -88,7 +77,6 @@ class OutputFormatter implements OutputFormatterInterface
     {
         $this->decorated = (bool) $decorated;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -96,35 +84,30 @@ class OutputFormatter implements OutputFormatterInterface
     {
         return $this->decorated;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function setStyle($name, OutputFormatterStyleInterface $style)
+    public function setStyle($name, \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyleInterface $style)
     {
-        $this->styles[strtolower($name)] = $style;
+        $this->styles[\strtolower($name)] = $style;
     }
-
     /**
      * {@inheritdoc}
      */
     public function hasStyle($name)
     {
-        return isset($this->styles[strtolower($name)]);
+        return isset($this->styles[\strtolower($name)]);
     }
-
     /**
      * {@inheritdoc}
      */
     public function getStyle($name)
     {
         if (!$this->hasStyle($name)) {
-            throw new InvalidArgumentException(sprintf('Undefined style: %s', $name));
+            throw new \Lauant\Forge\Symfony\Component\Console\Exception\InvalidArgumentException(\sprintf('Undefined style: %s', $name));
         }
-
-        return $this->styles[strtolower($name)];
+        return $this->styles[\strtolower($name)];
     }
-
     /**
      * {@inheritdoc}
      */
@@ -134,30 +117,26 @@ class OutputFormatter implements OutputFormatterInterface
         $offset = 0;
         $output = '';
         $tagRegex = '[a-z][a-z0-9_=;-]*+';
-        preg_match_all("#<(($tagRegex) | /($tagRegex)?)>#ix", $message, $matches, PREG_OFFSET_CAPTURE);
+        \preg_match_all("#<(({$tagRegex}) | /({$tagRegex})?)>#ix", $message, $matches, \PREG_OFFSET_CAPTURE);
         foreach ($matches[0] as $i => $match) {
             $pos = $match[1];
             $text = $match[0];
-
             if (0 != $pos && '\\' == $message[$pos - 1]) {
                 continue;
             }
-
             // add the text up to the next tag
-            $output .= $this->applyCurrentStyle(substr($message, $offset, $pos - $offset));
+            $output .= $this->applyCurrentStyle(\substr($message, $offset, $pos - $offset));
             $offset = $pos + \strlen($text);
-
             // opening tag?
             if ($open = '/' != $text[1]) {
                 $tag = $matches[1][$i][0];
             } else {
                 $tag = isset($matches[3][$i][0]) ? $matches[3][$i][0] : '';
             }
-
             if (!$open && !$tag) {
                 // </>
                 $this->styleStack->pop();
-            } elseif (false === $style = $this->createStyleFromString(strtolower($tag))) {
+            } elseif (\false === ($style = $this->createStyleFromString(\strtolower($tag)))) {
                 $output .= $this->applyCurrentStyle($text);
             } elseif ($open) {
                 $this->styleStack->push($style);
@@ -165,16 +144,12 @@ class OutputFormatter implements OutputFormatterInterface
                 $this->styleStack->pop($style);
             }
         }
-
-        $output .= $this->applyCurrentStyle(substr($message, $offset));
-
-        if (false !== strpos($output, "\0")) {
-            return strtr($output, array("\0" => '\\', '\\<' => '<'));
+        $output .= $this->applyCurrentStyle(\substr($message, $offset));
+        if (\false !== \strpos($output, "\0")) {
+            return \strtr($output, array("\0" => '\\', '\\<' => '<'));
         }
-
-        return str_replace('\\<', '<', $output);
+        return \str_replace('\\<', '<', $output);
     }
-
     /**
      * @return OutputFormatterStyleStack
      */
@@ -182,7 +157,6 @@ class OutputFormatter implements OutputFormatterInterface
     {
         return $this->styleStack;
     }
-
     /**
      * Tries to create new style instance from string.
      *
@@ -195,15 +169,12 @@ class OutputFormatter implements OutputFormatterInterface
         if (isset($this->styles[$string])) {
             return $this->styles[$string];
         }
-
-        if (!preg_match_all('/([^=]+)=([^;]+)(;|$)/', strtolower($string), $matches, PREG_SET_ORDER)) {
-            return false;
+        if (!\preg_match_all('/([^=]+)=([^;]+)(;|$)/', \strtolower($string), $matches, \PREG_SET_ORDER)) {
+            return \false;
         }
-
-        $style = new OutputFormatterStyle();
+        $style = new \Lauant\Forge\Symfony\Component\Console\Formatter\OutputFormatterStyle();
         foreach ($matches as $match) {
-            array_shift($match);
-
+            \array_shift($match);
             if ('fg' == $match[0]) {
                 $style->setForeground($match[1]);
             } elseif ('bg' == $match[0]) {
@@ -212,14 +183,12 @@ class OutputFormatter implements OutputFormatterInterface
                 try {
                     $style->setOption($match[1]);
                 } catch (\InvalidArgumentException $e) {
-                    return false;
+                    return \false;
                 }
             }
         }
-
         return $style;
     }
-
     /**
      * Applies current style from stack to text, if must be applied.
      *

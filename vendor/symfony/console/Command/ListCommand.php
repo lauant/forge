@@ -8,33 +8,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace Lauant\Forge\Symfony\Component\Console\Command;
 
-namespace Symfony\Component\Console\Command;
-
-use Symfony\Component\Console\Helper\DescriptorHelper;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-
+use Lauant\Forge\Symfony\Component\Console\Helper\DescriptorHelper;
+use Lauant\Forge\Symfony\Component\Console\Input\InputArgument;
+use Lauant\Forge\Symfony\Component\Console\Input\InputDefinition;
+use Lauant\Forge\Symfony\Component\Console\Input\InputInterface;
+use Lauant\Forge\Symfony\Component\Console\Input\InputOption;
+use Lauant\Forge\Symfony\Component\Console\Output\OutputInterface;
 /**
  * ListCommand displays the list of all available commands for the application.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class ListCommand extends Command
+class ListCommand extends \Lauant\Forge\Symfony\Component\Console\Command\Command
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this
-            ->setName('list')
-            ->setDefinition($this->createDefinition())
-            ->setDescription('Lists commands')
-            ->setHelp(<<<'EOF'
+        $this->setName('list')->setDefinition($this->createDefinition())->setDescription('Lists commands')->setHelp(<<<'EOF'
 The <info>%command.name%</info> command lists all commands:
 
   <info>php %command.full_name%</info>
@@ -51,10 +45,8 @@ It's also possible to get raw list of commands (useful for embedding command run
 
   <info>php %command.full_name% --raw</info>
 EOF
-            )
-        ;
+);
     }
-
     /**
      * {@inheritdoc}
      */
@@ -62,36 +54,23 @@ EOF
     {
         return $this->createDefinition();
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(\Lauant\Forge\Symfony\Component\Console\Input\InputInterface $input, \Lauant\Forge\Symfony\Component\Console\Output\OutputInterface $output)
     {
         if ($input->getOption('xml')) {
-            @trigger_error('The --xml option was deprecated in version 2.7 and will be removed in version 3.0. Use the --format option instead.', E_USER_DEPRECATED);
-
+            @\trigger_error('The --xml option was deprecated in version 2.7 and will be removed in version 3.0. Use the --format option instead.', \E_USER_DEPRECATED);
             $input->setOption('format', 'xml');
         }
-
-        $helper = new DescriptorHelper();
-        $helper->describe($output, $this->getApplication(), array(
-            'format' => $input->getOption('format'),
-            'raw_text' => $input->getOption('raw'),
-            'namespace' => $input->getArgument('namespace'),
-        ));
+        $helper = new \Lauant\Forge\Symfony\Component\Console\Helper\DescriptorHelper();
+        $helper->describe($output, $this->getApplication(), array('format' => $input->getOption('format'), 'raw_text' => $input->getOption('raw'), 'namespace' => $input->getArgument('namespace')));
     }
-
     /**
      * {@inheritdoc}
      */
     private function createDefinition()
     {
-        return new InputDefinition(array(
-            new InputArgument('namespace', InputArgument::OPTIONAL, 'The namespace name'),
-            new InputOption('xml', null, InputOption::VALUE_NONE, 'To output list as XML'),
-            new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command list'),
-            new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
-        ));
+        return new \Lauant\Forge\Symfony\Component\Console\Input\InputDefinition(array(new \Lauant\Forge\Symfony\Component\Console\Input\InputArgument('namespace', \Lauant\Forge\Symfony\Component\Console\Input\InputArgument::OPTIONAL, 'The namespace name'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('xml', null, \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'To output list as XML'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('raw', null, \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_NONE, 'To output raw command list'), new \Lauant\Forge\Symfony\Component\Console\Input\InputOption('format', null, \Lauant\Forge\Symfony\Component\Console\Input\InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt')));
     }
 }
